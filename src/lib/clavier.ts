@@ -221,8 +221,17 @@ function symbole(
   return { id, libelle, aria, action: { type: 'inserer', texte }, largeur };
 }
 
-/** La virgule décimale. Insère un point : le seul décimal que l'analyseur lit. */
-const VIRGULE = symbole('virgule', ',', 'Virgule décimale', '.');
+/**
+ * La virgule décimale, **adaptée au type de grandeur**.
+ *
+ * L'analyseur rationnel lit les deux écritures (`1,5` et `1.5`), mais
+ * l'analyseur d'expressions **refuse la virgule** : `1,5x` est rejeté. Insérer
+ * toujours un point afficherait un « . » sous une touche étiquetée « , », ce
+ * qui mislead l'élève ; insérer toujours une virgule casserait les expressions.
+ * La touche suit donc ce que la grammaire sait lire.
+ */
+const VIRGULE_EXPRESSION = symbole('virgule', '.', 'Point décimal', '.');
+const VIRGULE_RATIONNELLE = symbole('virgule', ',', 'Virgule décimale', ',');
 
 /** Parenthèses, une par ligne du clavier où elles servent. */
 const PARENTHESES: Touche[] = [
@@ -275,10 +284,26 @@ const PUISSANCES: Touche[] = [
 ];
 
 /**
- * Le signe `=`, qui se comporte comme un caractère dans les dispositions
- * d'expression et de racine.
+ * Le signe `=`.
+ *
+ * ## Pourquoi cette touche termine la réponse au lieu d'insérer « = »
+ *
+ * Chantier 7.6 : vérifié sur la production, **aucun** exercice du MVP n'accepte
+ * « = » dans une réponse. Une touche qui insère donc toujours un caractère
+ * rejeté produit mécaniquement « Caractère non reconnu : « = ». » — la touche
+ * était donc décorative, ce que le cahier des charges interdit explicitement.
+ *
+ * Le cahier des charges exige pourtant cette touche. La sortie retenue est celle
+ * qui respecte les deux : « = » **valide la réponse**, comme la touche
+ * « Vérifier ». C'est ce que l'élève fait sur son cahier — il termine par « = » —
+ * et cela ne modifie ni l'analyseur, ni une règle D5, ni une réponse attendue.
  */
-const EGAL: Touche = symbole('egal', '=', 'Égal', '=');
+const EGAL: Touche = {
+  id: 'egal',
+  libelle: '=',
+  aria: 'Terminer et vérifier ma réponse',
+  action: { type: 'valider' },
+};
 
 /**
  * Le signe `=` en pleine largeur, pour les exercices de calcul fractionnaire :
@@ -330,7 +355,7 @@ const RANGEES_EXPRESSION: RangeeClavier[] = [
   rangee(chiffre(7), chiffre(8), chiffre(9), OPERATIONS[0]!),
   rangee(chiffre(4), chiffre(5), chiffre(6), OPERATIONS[1]!),
   rangee(chiffre(1), chiffre(2), chiffre(3), OPERATIONS[2]!),
-  rangee(chiffre(0), VIRGULE, symbole('x', 'x', 'Lettre x', 'x'), OPERATIONS[3]!),
+  rangee(chiffre(0), VIRGULE_EXPRESSION, symbole('x', 'x', 'Lettre x', 'x'), OPERATIONS[3]!),
   rangee(PUISSANCES[0]!, PUISSANCES[1]!, PUISSANCES[2]!, EGAL),
   rangee(...PARENTHESES),
   ...RANGEES_SERVICE,
@@ -347,7 +372,7 @@ const RANGEES_RACINE: RangeeClavier[] = [
   rangee(chiffre(7), chiffre(8), chiffre(9), RACINE_CARREE),
   rangee(chiffre(4), chiffre(5), chiffre(6), OPERATIONS[1]!),
   rangee(chiffre(1), chiffre(2), chiffre(3), OPERATIONS[0]!),
-  rangee(chiffre(0), VIRGULE, OPERATIONS[2]!, OPERATIONS[3]!),
+  rangee(chiffre(0), VIRGULE_EXPRESSION, OPERATIONS[2]!, OPERATIONS[3]!),
   rangee(...PARENTHESES),
   rangee(EGAL_PLEIN_LARGEUR),
   ...RANGEES_SERVICE,
@@ -363,7 +388,7 @@ const RANGEES_RATIONNELLE: RangeeClavier[] = [
   rangee(chiffre(7), chiffre(8), chiffre(9), FRACTION),
   rangee(chiffre(4), chiffre(5), chiffre(6), OPERATIONS[1]!),
   rangee(chiffre(1), chiffre(2), chiffre(3), OPERATIONS[0]!),
-  rangee(chiffre(0), VIRGULE, OPERATIONS[2]!, OPERATIONS[3]!),
+  rangee(chiffre(0), VIRGULE_RATIONNELLE, OPERATIONS[2]!, OPERATIONS[3]!),
   rangee(EGAL_PLEIN_LARGEUR),
   ...RANGEES_SERVICE,
 ];

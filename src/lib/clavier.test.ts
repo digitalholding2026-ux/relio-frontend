@@ -162,18 +162,37 @@ describe('7.5 — les touches insèrent des symboles que le moteur comprend', ()
 
   it('normalise la saisie produite vers un texte que le moteur analyse', () => {
     // Après passage dans la normalisation de production, plus aucun caractère
-    // ne doit être exotique : il ne resterait que des chiffres et des
-    // opérateurs connus.
+    // ne doit être exotique : il ne resterait que des chiffres, des opérateurs
+    // connus — et la virgule, que l'analyseur rationnel accepte.
     for (const type of ['rationnelle', 'expression'] as const) {
       for (const symbole of symbolesInseres(type)) {
         const normalise = normaliseCommeLeMoteur(symbole);
         assert.match(
           normalise,
-          /^[0-9a-zA-Z+\-*/^()=. ]*$/,
+          /^[0-9a-zA-Z+\-*/^()=., ]*$/,
           `${type} : « ${symbole} » donne « ${normalise} », hors alphabet du moteur.`,
         );
       }
     }
+  });
+
+  it('n’insère jamais de virgule dans une expression', () => {
+    // L'analyseur d'expressions refuse « , » : `1,5x` est rejeté. La touche
+    // décimale doit donc insérer un point sur ces exercices.
+    for (const symbole of symbolesInseres('expression')) {
+      assert.doesNotMatch(symbole, /,/, `expression : « ${symbole} » serait refusé.`);
+    }
+    const touche = touchesPour('expression').find((t) => t.id === 'virgule');
+    assert.equal(touche?.libelle, '.');
+    assert.equal((touche?.action as { texte: string }).texte, '.');
+  });
+
+  it('insère la virgule sur un exercice fractionnaire, où elle est acceptée', () => {
+    // L'analyseur rationnel lit `1,5` comme `1.5`. La convention francophone
+    // s'applique donc sans casser la correction.
+    const touche = touchesPour('rationnelle').find((t) => t.id === 'virgule');
+    assert.equal(touche?.libelle, ',');
+    assert.equal((touche?.action as { texte: string }).texte, ',');
   });
 
   it('étiquette la division « ÷ » mais insère « / »', () => {
@@ -297,13 +316,15 @@ describe('7.5 — les touches exigées sont présentes', () => {
 
 describe('7.5 — l’aperçu est lisible et sans effet', () => {
   it('décrit une fraction en nommant ses deux termes', () => {
-    const texte = apercuLisible('29/18');
-    assert.match(texte, /29/);
-    assert.match(texte, /18/);
+    // Valeurs choisies hors des réponses attendues du MVP : un test ne doit
+    // pas ressembler à un corrigé, même dans ses propres données d'exemple.
+    const texte = apercuLisible('3/4');
+    assert.match(texte, /3/);
+    assert.match(texte, /4/);
   });
 
   it('décrit une racine', () => {
-    assert.match(apercuLisible('5√2'), /racine/i);
+    assert.match(apercuLisible('7√5'), /racine/i);
   });
 
   it('décrit une puissance', () => {
@@ -317,7 +338,7 @@ describe('7.5 — l’aperçu est lisible et sans effet', () => {
 
   it('ne modifie jamais la valeur envoyée à l’API', () => {
     // L'aperçu est une aide à la lecture : il ne produit pas de second texte.
-    for (const valeur of ['29/18', '5√2', 'x^3', '2x + 1', '7/']) {
+    for (const valeur of ['3/4', '7√5', 'x^3', '2x + 3', '7/']) {
       const original = valeur;
       apercuLisible(valeur);
       assert.equal(original, valeur);

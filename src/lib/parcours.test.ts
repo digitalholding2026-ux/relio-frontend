@@ -232,7 +232,7 @@ describe('corrigerReponse', () => {
   it('transmet zéro échec par défaut, sans champ superflu', async () => {
     const appels = stubFetch(() => Promise.resolve(json(VERDICT)));
 
-    await corrigerReponse(BASE, 'MVP-B1-E1', '2x + 1', null);
+    await corrigerReponse(BASE, 'MVP-B1-E1', '2x + 3', null);
 
     const corps = JSON.parse(String(appels[0]?.init.body)) as Record<string, unknown>;
     assert.equal(corps.nbEchecs, 0);
