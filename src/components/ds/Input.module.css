@@ -1,0 +1,93 @@
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-1);
+  width: 100%;
+}
+
+.label {
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-medium);
+  color: var(--relio-texte);
+  line-height: var(--relio-interligne-corps);
+}
+
+.requis {
+  color: var(--relio-alerte);
+}
+
+.saisie {
+  composes: focus from './base.module.css';
+
+  /* Un peu au-dessus du plancher tactile : voir `--relio-champ-min`. */
+  min-height: var(--relio-champ-min);
+  width: 100%;
+  padding: var(--relio-espace-2) var(--relio-espace-3);
+
+  /* 16 px : en dessous de cette taille, iOS réduit le texte et fait zoomer la
+     page au focus. 16 px est le point de bascule à ne pas franchir. */
+  font-size: var(--relio-taille-base);
+  font-family: var(--relio-police);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte);
+
+  background: var(--relio-surface);
+  /* Bordure forte : le champ doit être repérable sans dépendre de sa teinte. */
+  border: 1px solid var(--relio-bordure-forte);
+  border-radius: var(--relio-rayon-md);
+
+  transition: border-color var(--relio-duree-micro) ease;
+}
+
+.saisie::placeholder {
+  color: var(--relio-texte-secondaire);
+  /* Le texte indicatif n'est pas une information : le réserver à la saisie. */
+  opacity: 1;
+}
+
+.zone {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/*
+ * L'erreur double le signal : la bordure passe au rouge **et** un message
+ * explicite apparaît. La bordure seule ne suffit pas — le rouge ne se voit pas
+ * de la même façon selon l'écran, la luminosité et la fatigue.
+ */
+.saisieErreur {
+  border-color: var(--relio-alerte);
+  border-width: 2px;
+}
+
+.aide {
+  margin: 0;
+  font-size: var(--relio-taille-xs);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+.erreur {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--relio-espace-1);
+  margin: 0;
+  font-size: var(--relio-taille-xs);
+  font-weight: var(--relio-gras-medium);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-alerte);
+}
+
+/*
+ * Réservé au lecteur d'écran : « (obligatoire) » doit être entendu, mais pas
+ * affiché — l'astérisque suffit visuellement.
+ */
+.cache {
+  composes: visuellementCache from './base.module.css';
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saisie {
+    transition: none;
+  }
+}

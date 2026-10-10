@@ -1,0 +1,55 @@
+.puce {
+  composes: focus cible from './base.module.css';
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--relio-espace-2);
+
+  padding: 0 var(--relio-espace-3);
+
+  border: 1px solid var(--relio-bordure-forte);
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-surface);
+  color: var(--relio-texte);
+
+  font-family: var(--relio-police);
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-medium);
+  line-height: var(--relio-interligne-titre);
+  white-space: nowrap;
+
+  cursor: pointer;
+  transition: background-color var(--relio-duree-micro) ease, border-color var(--relio-duree-micro) ease;
+}
+
+.puce:hover:not(:disabled) {
+  background: var(--relio-surface-haute);
+}
+
+/*
+ * L'état sélectionné est porté par trois signaux, pas par la seule couleur :
+ * le fond, la graisse et l'état `aria-pressed`. Une personne qui distingue mal
+ * les couleurs voit la graisse ; une personne qui ne voit pas l'écran entend
+ * l'état.
+ */
+.active {
+  background: var(--relio-primaire);
+  border-color: var(--relio-primaire);
+  color: var(--relio-primaire-sur);
+  font-weight: var(--relio-gras-semibold);
+}
+
+.active:hover:not(:disabled) {
+  background: var(--relio-primaire);
+}
+
+.puce:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .puce {
+    transition: none;
+  }
+}

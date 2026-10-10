@@ -1,0 +1,9 @@
+.groupe {
+  display: flex;
+  gap: var(--relio-espace-2);
+}
+
+.espace {
+  width: 104px;
+  height: var(--relio-tactile-min);
+}

@@ -1,0 +1,101 @@
+.hote {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/*
+ * Le fond n'est pas décoratif au sens strict — il ferme la feuille au clic —
+ * mais il n'est pas un contrôle : c'est pourquoi il est masqué au lecteur
+ * d'écran et absent de l'ordre de tabulation. Le bouton « Fermer » offre la
+ * même action, accessible au clavier.
+ */
+.fond {
+  position: absolute;
+  inset: 0;
+  background: rgb(15 23 42 / 55%);
+}
+
+.feuille {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: var(--relio-largeur-contenu);
+  /* La feuille ne dépasse jamais la moitié de la hauteur disponible : le
+     contenu au-dessus doit rester lisible. */
+  max-height: 88dvh;
+
+  background: var(--relio-surface);
+  border-radius: var(--relio-rayon-xl) var(--relio-rayon-xl) 0 0;
+  box-shadow: var(--relio-ombre-lg);
+  animation:monte var(--relio-duree-ecran) ease;
+}
+
+/* Poignée : indique qu'on peut faire glisser vers le bas. */
+.poignee {
+  width: 40px;
+  height: 4px;
+  margin: var(--relio-espace-2) auto 0;
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-bordure-forte);
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--relio-espace-3);
+  padding: var(--relio-espace-3) var(--relio-espace-4);
+  border-bottom: 1px solid var(--relio-bordure);
+}
+
+.titre {
+  margin: 0;
+  font-size: var(--relio-taille-lg);
+  font-weight: var(--relio-gras-semibold);
+  line-height: var(--relio-interligne-titre);
+  color: var(--relio-texte);
+}
+
+.corps {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--relio-espace-4);
+  font-size: var(--relio-taille-base);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte);
+}
+
+.pied {
+  display: flex;
+  gap: var(--relio-espace-2);
+  padding: var(--relio-espace-3) var(--relio-espace-4);
+  border-top: 1px solid var(--relio-bordure);
+  /* Marge de sécurité : sur les téléphones à bord arrondi, un bouton collé en
+     bas est coupé par la barre gestuelle. */
+  padding-bottom: calc(var(--relio-espace-4) + env(safe-area-inset-bottom, 0px));
+}
+
+@keyframes monte {
+  from {
+    transform: translateY(12%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/*
+ * L'animation part du bas, comme une feuille qu'on relève. En mouvement réduit,
+ * elle disparaît : le contenu apparaît, sans translation.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .feuille {
+    animation: none;
+  }
+}

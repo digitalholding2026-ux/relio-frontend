@@ -1,0 +1,74 @@
+.enveloppe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+  width: 100%;
+}
+
+.entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--relio-espace-2);
+}
+
+.label {
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-medium);
+  color: var(--relio-texte);
+}
+
+.valeur {
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-semibold);
+  /* Le chiffre est aussi lu par `aria-valuenow` : la couleur ne porte pas
+     seule l'information. */
+  color: var(--relio-texte-secondaire);
+  font-variant-numeric: tabular-nums;
+}
+
+.piste {
+  position: relative;
+  overflow: hidden;
+  height: 10px;
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-surface-haute);
+  border: 1px solid var(--relio-bordure);
+}
+
+.remplissage {
+  width: var(--relio-part, 0%);
+  height: 100%;
+  border-radius: var(--relio-rayon-full);
+  /* Pas d'animation : la barre est mise à jour à la fin d'une action, pas en
+     continu. Animer une largeur coûte des images sur un appareil d'entrée de
+     gamme sans rien apprendre à l'élève. */
+  transition: width var(--relio-duree-standard) ease;
+}
+
+.primaire .remplissage {
+  background: var(--relio-primaire);
+}
+
+.succes .remplissage {
+  background: var(--relio-succes);
+}
+
+.accent .remplissage {
+  background: var(--relio-accent);
+}
+
+.alerte .remplissage {
+  background: var(--relio-alerte);
+}
+
+/*
+ * La piste porte une bordure fine pour rester visible sur une surface blanche :
+ * sans elle, une barre à 0 % est indiscernable d'une zone vide.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .remplissage {
+    transition: none;
+  }
+}

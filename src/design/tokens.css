@@ -1,0 +1,192 @@
+/**
+ * Variables CSS des design tokens Relio.
+ *
+ * Ce fichier est la représentation **runtime** de `tokens.ts`. Il est écrit à la
+ * main — pas généré au build — pour que la feuille reste lisible et modifiable
+ * sans tooling supplémentaire, au prix d'une contrainte : `tokens.test.ts`
+ * compare chaque valeur à celle déclarée dans `tokens.ts` et échoue à la
+ * première divergence.
+ *
+ * ## Trois modes
+ *
+ * - **clair** (défaut) ;
+ * - **sombre**, déclaré deux fois : par `prefers-color-scheme` pour qui n'a
+ *   jamais choisi, et par `[data-theme="sombre"]` pour qui a choisi ;
+ * - **économie de données**, qui retire ombres et animations sans changer une
+ *   seule couleur.
+ *
+ * Le mode sombre par préférence système est volontairement déclare **avant** le
+ * sélecteur d'attribut : l'attribut, plus spécifique, l'emporte quand il est
+ * présent. Ainsi, un élève ayant choisi le mode clair sur un téléphone réglé en
+ * sombre voit bien le mode clair.
+ */
+
+:root {
+  /* --- Rôles de couleur, mode clair ------------------------------------- */
+  --relio-fond: #faf7f2;
+  --relio-surface: #ffffff;
+  --relio-surface-haute: #f4f1ec;
+  --relio-texte: #0f172a;
+  --relio-texte-secondaire: #63738a;
+  --relio-bordure: #e2e8f0;
+  --relio-bordure-forte: #838a96;
+  --relio-primaire: #1e2a78;
+  --relio-primaire-sur: #ffffff;
+  --relio-accent: #f97316;
+  --relio-accent-sur: #0f172a;
+  --relio-succes: #16a34a;
+  --relio-succes-sur: #0f172a;
+  --relio-succes-doux: #dcfce7;
+  --relio-alerte: #dc2626;
+  --relio-alerte-sur: #ffffff;
+  --relio-alerte-doux: #fbe5e5;
+  --relio-accent-doux: #fed7aa;
+  --relio-focus: #1e2a78;
+  --relio-primaire-doux: #edeef4;
+
+  /* --- Couleurs de marque ------------------------------------------------ */
+  --relio-indigo: #1e2a78;
+  --relio-indigo-dark: #131b52;
+  --relio-orange: #f97316;
+  --relio-orange-soft: #fed7aa;
+  --relio-green: #16a34a;
+  --relio-green-soft: #dcfce7;
+  --relio-red: #dc2626;
+  --relio-sand: #faf7f2;
+  --relio-ink: #0f172a;
+  --relio-muted: #64748b;
+  --relio-border: #e2e8f0;
+
+  /* --- Typographie ------------------------------------------------------- */
+  --relio-police: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --relio-taille-xs: 12px;
+  --relio-taille-sm: 14px;
+  --relio-taille-base: 16px;
+  --relio-taille-lg: 18px;
+  --relio-taille-xl: 20px;
+  --relio-taille-2xl: 24px;
+  --relio-taille-3xl: 32px;
+  --relio-taille-4xl: 40px;
+  --relio-gras-normal: 400;
+  --relio-gras-medium: 500;
+  --relio-gras-semibold: 600;
+  --relio-gras-bold: 700;
+  --relio-interligne-corps: 1.5;
+  --relio-interligne-titre: 1.2;
+
+  /* --- Espacements ------------------------------------------------------- */
+  --relio-espace-0: 0px;
+  --relio-espace-1: 4px;
+  --relio-espace-2: 8px;
+  --relio-espace-3: 12px;
+  --relio-espace-4: 16px;
+  --relio-espace-6: 24px;
+  --relio-espace-8: 32px;
+  --relio-espace-12: 48px;
+  --relio-espace-16: 64px;
+
+  /* --- Rayons ------------------------------------------------------------ */
+  --relio-rayon-sm: 8px;
+  --relio-rayon-md: 12px;
+  --relio-rayon-lg: 16px;
+  --relio-rayon-xl: 24px;
+  --relio-rayon-full: 9999px;
+
+  /* --- Ombres (remplaces par des bordures en économie de données) --------- */
+  --relio-ombre-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --relio-ombre-md: 0 2px 6px rgba(15, 23, 42, 0.08);
+  --relio-ombre-lg: 0 8px 24px rgba(15, 23, 42, 0.1);
+
+  /* --- Durées ------------------------------------------------------------ */
+  --relio-duree-micro: 150ms;
+  --relio-duree-standard: 250ms;
+  --relio-duree-ecran: 400ms;
+
+  /* --- Divers ------------------------------------------------------------ */
+  --relio-tactile-min: 44px;
+  /* Champs de saisie : 48 px, au-dessus du plancher tactile. Le gabarit
+     système sur Android est plus haut qu'un texte dessiné, et un champ se vise
+     au doigt en visant large. */
+  --relio-champ-min: 48px;
+  --relio-largeur-contenu: 46rem;
+  --relio-transition: var(--relio-duree-standard) ease;
+}
+
+/* Mode sombre demandé par le système, pour qui n'a jamais choisi. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='clair']) {
+    --relio-fond: #0b1020;
+    --relio-surface: #151b33;
+    --relio-surface-haute: #1e2647;
+    --relio-texte: #f1f5f9;
+    --relio-texte-secondaire: #94a3b8;
+    --relio-bordure: #6a7290;
+    --relio-bordure-forte: #9ba3bc;
+    --relio-primaire: #2a3a96;
+    --relio-primaire-sur: #ffffff;
+    --relio-succes-doux: #12301f;
+    --relio-alerte: #f87171;
+    --relio-alerte-sur: #0f172a;
+  --relio-alerte-doux: #411d30;
+    --relio-alerte-doux: #411d30;
+    --relio-accent-doux: #3a2410;
+    --relio-focus: #8b93ae;
+    --relio-primaire-doux: #232a4d;
+    --relio-ombre-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --relio-ombre-md: 0 2px 6px rgba(0, 0, 0, 0.55);
+    --relio-ombre-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Mode sombre choisi explicitement : prioritaire sur la préférence système. */
+:root[data-theme='sombre'] {
+  --relio-fond: #0b1020;
+  --relio-surface: #151b33;
+  --relio-surface-haute: #1e2647;
+  --relio-texte: #f1f5f9;
+  --relio-texte-secondaire: #94a3b8;
+  --relio-bordure: #6a7290;
+  --relio-bordure-forte: #9ba3bc;
+  --relio-primaire: #2a3a96;
+  --relio-primaire-sur: #ffffff;
+  --relio-succes-doux: #12301f;
+  --relio-alerte: #f87171;
+  --relio-alerte-sur: #0f172a;
+  --relio-alerte-doux: #411d30;
+  --relio-accent-doux: #3a2410;
+  --relio-focus: #8b93ae;
+  --relio-primaire-doux: #232a4d;
+  --relio-ombre-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --relio-ombre-md: 0 2px 6px rgba(0, 0, 0, 0.55);
+  --relio-ombre-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/*
+ * Économie de données : même interface, sans animation ni ombre.
+ *
+ * Le mode ne retire aucune information : les ombres font place à une bordure
+ * de même rôle. C'est ce qui permet de proposer le mode à un élève en données
+ * limitées sans lui proposer un produit dégradé.
+ */
+:root[data-economie='on'] {
+  --relio-ombre-sm: none;
+  --relio-ombre-md: none;
+  --relio-ombre-lg: none;
+  --relio-duree-micro: 0ms;
+  --relio-duree-standard: 0ms;
+  --relio-duree-ecran: 0ms;
+}
+
+/*
+ * Le réglage système « réduire les animations » prime sur tout le reste.
+ * Une animation peut être désagréable pour une personne vestibulaire ; ce
+ * réglage est une demande explicite, pas une préférence de goût.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --relio-duree-micro: 0ms;
+    --relio-duree-standard: 0ms;
+    --relio-duree-ecran: 0ms;
+  }
+}

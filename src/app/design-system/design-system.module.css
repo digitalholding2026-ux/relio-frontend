@@ -1,0 +1,250 @@
+/**
+ * Mise en page de la page `/design-system`.
+ *
+ * ## Priorité au mobile
+ *
+ * Tout est sur **une seule colonne**. Sur un écran de 360 px, une grille à
+ * deux colonnes donnerait des cartes de 160 px : trop étroites pour un libellé
+ * de bouton, et illisibles dès qu'une phrase se replie.
+ *
+ * La grille à plusieurs colonnes n'apparaît qu'au-delà de 768 px, où l'espace
+ * existe réellement.
+ */
+
+.page {
+  max-width: var(--relio-largeur-contenu);
+  margin-inline: auto;
+  padding: var(--relio-espace-4) var(--relio-espace-4) var(--relio-espace-12);
+  font-family: var(--relio-police);
+  color: var(--relio-texte);
+  background: var(--relio-fond);
+  line-height: var(--relio-interligne-corps);
+}
+
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--relio-espace-3);
+  margin-bottom: var(--relio-espace-6);
+}
+
+.surtitre {
+  margin: 0;
+  font-size: var(--relio-taille-xs);
+  font-weight: var(--relio-gras-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--relio-texte-secondaire);
+}
+
+.titre {
+  margin: var(--relio-espace-1) 0;
+  font-size: var(--relio-taille-3xl);
+  font-weight: var(--relio-gras-bold);
+  line-height: var(--relio-interligne-titre);
+}
+
+.chapo {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--relio-texte-secondaire);
+}
+
+.section {
+  margin-bottom: var(--relio-espace-8);
+  padding-top: var(--relio-espace-4);
+  border-top: 1px solid var(--relio-bordure);
+}
+
+.sectionTitre {
+  margin: 0 0 var(--relio-espace-1);
+  font-size: var(--relio-taille-xl);
+  font-weight: var(--relio-gras-bold);
+  line-height: var(--relio-interligne-titre);
+}
+
+.sectionDescription {
+  margin: 0 0 var(--relio-espace-4);
+  max-width: 60ch;
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+.sousTitre {
+  margin: 0 0 var(--relio-espace-3);
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--relio-texte-secondaire);
+}
+
+.bloc {
+  margin-bottom: var(--relio-espace-4);
+}
+
+.note {
+  margin: var(--relio-espace-3) 0 0;
+  font-size: var(--relio-taille-xs);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+.rangee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--relio-espace-2);
+}
+
+/* --- Couleurs ------------------------------------------------------------- */
+
+.nuances {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--relio-espace-2);
+}
+
+.nuance {
+  display: flex;
+  align-items: center;
+  gap: var(--relio-espace-2);
+  min-width: 0;
+}
+
+.pastilleCouleur {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--relio-rayon-sm);
+  border: 1px solid var(--relio-bordure);
+}
+
+.nuanceTexte {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--relio-taille-xs);
+}
+
+.nuanceTexte strong {
+  font-weight: var(--relio-gras-semibold);
+}
+
+.nuanceTexte code {
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Tableau des contrastes ---------------------------------------------- */
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--relio-taille-sm);
+}
+
+.caption {
+  margin-bottom: var(--relio-espace-2);
+  text-align: left;
+  font-size: var(--relio-taille-xs);
+  color: var(--relio-texte-secondaire);
+}
+
+.tableau th,
+.tableau td {
+  padding: var(--relio-espace-2);
+  text-align: left;
+  border-bottom: 1px solid var(--relio-bordure);
+}
+
+.tableau thead th {
+  font-size: var(--relio-taille-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--relio-texte-secondaire);
+}
+
+.ratio {
+  font-weight: var(--relio-gras-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Typographie et mesures ---------------------------------------------- */
+
+.typo p {
+  margin: 0 0 var(--relio-espace-2);
+  line-height: var(--relio-interligne-corps);
+}
+
+.mesures {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+}
+
+.mesure {
+  display: flex;
+  align-items: center;
+  gap: var(--relio-espace-3);
+  font-size: var(--relio-taille-xs);
+}
+
+.mesureBarre {
+  height: 12px;
+  border-radius: var(--relio-rayon-sm);
+  background: var(--relio-primaire);
+}
+
+.mesureCoin {
+  flex: 0 0 auto;
+  border: 1px solid var(--relio-bordure-forte);
+  background: var(--relio-primaire-doux);
+}
+
+.mesureOmbre {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--relio-rayon-md);
+  background: var(--relio-surface);
+}
+
+/* --- Icônes --------------------------------------------------------------- */
+
+.rangeeIcones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: var(--relio-espace-3);
+}
+
+.iconeCase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--relio-espace-1);
+  padding: var(--relio-espace-2);
+  border-radius: var(--relio-rayon-md);
+  background: var(--relio-surface-haute);
+  color: var(--relio-texte);
+  font-size: 11px;
+  text-align: center;
+}
+
+/*
+ * Deux colonnes seulement au-delà de 768 px. Sur un téléphone, une seule
+ * colonne : c'est la largeur de référence du produit, pas l'exception.
+ */
+@media (min-width: 768px) {
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--relio-espace-4);
+    align-items: start;
+  }
+
+  .bloc {
+    margin-bottom: 0;
+  }
+}

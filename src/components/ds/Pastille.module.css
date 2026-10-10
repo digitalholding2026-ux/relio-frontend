@@ -1,0 +1,55 @@
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--relio-espace-1);
+
+  padding: 2px var(--relio-espace-2);
+  border: 1px solid transparent;
+  border-radius: var(--relio-rayon-full);
+
+  font-family: var(--relio-police);
+  font-size: var(--relio-taille-xs);
+  font-weight: var(--relio-gras-semibold);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.compacte {
+  padding: 0 var(--relio-espace-2);
+  font-size: 11px;
+}
+
+/*
+ * Un fond teinté porte toujours du texte principal : les teintes claires
+ * (`--relio-succes-doux`, `--relio-accent-doux`) ont un contraste de 13 à 16:1
+ * avec l'encre. Les fonds saturés, eux, portent aussi l'encre — sauf le rouge.
+ */
+
+.neutre {
+  background: var(--relio-surface-haute);
+  color: var(--relio-texte);
+  border-color: var(--relio-bordure);
+}
+
+.succes {
+  background: var(--relio-succes-doux);
+  color: var(--relio-texte);
+  border-color: var(--relio-succes);
+}
+
+.alerte {
+  background: var(--relio-alerte-doux);
+  color: var(--relio-alerte);
+  border-color: var(--relio-alerte);
+}
+
+.accent {
+  background: var(--relio-accent-doux);
+  color: var(--relio-texte);
+  border-color: var(--relio-accent);
+}
+
+.primaire {
+  background: var(--relio-primaire);
+  color: var(--relio-primaire-sur);
+}

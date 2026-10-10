@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import '../design/tokens.css';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -10,7 +11,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#2b4bd8',
+  // La couleur suit le thème choisi : une barre d'adresse claire sous une page
+  // sombre donne l'impression que la page flotte.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FAF7F2' },
+    { media: '(prefers-color-scheme: dark)', color: '#0B1020' },
+  ],
 };
 
 export default function RootLayout({

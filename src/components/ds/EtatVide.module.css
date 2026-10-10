@@ -1,0 +1,34 @@
+.etat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--relio-espace-3);
+  padding: var(--relio-espace-8) var(--relio-espace-4);
+  text-align: center;
+}
+
+.icone {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-primaire-doux);
+  color: var(--relio-primaire);
+}
+
+.titre {
+  margin: 0;
+  font-size: var(--relio-taille-lg);
+  font-weight: var(--relio-gras-semibold);
+  line-height: var(--relio-interligne-titre);
+  color: var(--relio-texte);
+}
+
+.description {
+  margin: 0;
+  max-width: 34ch;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}

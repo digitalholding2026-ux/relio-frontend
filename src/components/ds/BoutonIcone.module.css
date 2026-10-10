@@ -1,0 +1,73 @@
+.bouton {
+  composes: focus cible from './base.module.css';
+
+  display: inline-grid;
+  place-items: center;
+
+  /* La zone tactile est fixée ici, pas déduite de la taille du glyphe. */
+  min-width: var(--relio-tactile-min);
+  min-height: var(--relio-tactile-min);
+
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--relio-rayon-md);
+  background: transparent;
+  color: var(--relio-texte);
+  cursor: pointer;
+  transition: background-color var(--relio-duree-micro) ease;
+}
+
+.bouton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sm {
+  width: var(--relio-tactile-min);
+  height: var(--relio-tactile-min);
+}
+
+.md {
+  width: 52px;
+  height: 52px;
+}
+
+.lg {
+  width: 60px;
+  height: 60px;
+}
+
+.leger {
+  background: var(--relio-surface);
+  border-color: var(--relio-bordure-forte);
+}
+
+.leger:hover:not(:disabled) {
+  background: var(--relio-surface-haute);
+}
+
+/* `plein` ne sert que sur une surface de couleur : le rouge est le seul
+   accent à tolérer un texte blanc (4,83:1). */
+.plein {
+  background: var(--relio-primaire);
+  color: var(--relio-primaire-sur);
+}
+
+.plein:hover:not(:disabled) {
+  background: var(--relio-indigo-dark);
+}
+
+.discret {
+  color: var(--relio-texte-secondaire);
+}
+
+.discret:hover:not(:disabled) {
+  background: var(--relio-surface-haute);
+  color: var(--relio-texte);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bouton {
+    transition: none;
+  }
+}

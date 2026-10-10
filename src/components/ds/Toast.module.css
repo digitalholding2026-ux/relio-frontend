@@ -1,0 +1,82 @@
+/*
+ * La zone est fixée en bas de l'écran : c'est là que le regard se porte après
+ * une action, et c'est la position qui ne masque ni le champ en cours de
+ * saisie ni le bouton de validation.
+ */
+.zone {
+  position: fixed;
+  left: var(--relio-espace-3);
+  right: var(--relio-espace-3);
+  bottom: calc(var(--relio-espace-4) + env(safe-area-inset-bottom, 0px));
+
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+
+  /* La zone ne doit jamais élargir la page : sans cette contrainte, un texte
+     long en français peut dépasser la largeur de l'écran et créer un
+     débordement horizontal. */
+  max-width: var(--relio-largeur-contenu);
+  margin-inline: auto;
+  pointer-events: none;
+}
+
+.notification {
+  pointer-events: auto;
+
+  display: flex;
+  align-items: center;
+  gap: var(--relio-espace-3);
+
+  padding: var(--relio-espace-3);
+  border: 1px solid var(--relio-bordure);
+  border-radius: var(--relio-rayon-md);
+  background: var(--relio-surface);
+  box-shadow: var(--relio-ombre-lg);
+  color: var(--relio-texte);
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+}
+
+.info {
+  border-left: 4px solid var(--relio-primaire);
+}
+
+.succes {
+  border-left: 4px solid var(--relio-succes);
+}
+
+.alerte {
+  border-left: 4px solid var(--relio-alerte);
+}
+
+.texte {
+  flex: 1;
+}
+
+.fermer {
+  composes: focus cible from './base.module.css';
+
+  display: grid;
+  place-items: center;
+
+  /* 44 px : fermer une notification au doigt ne doit pas être un exercice de
+     précision. */
+  min-width: var(--relio-tactile-min);
+  min-height: var(--relio-tactile-min);
+
+  margin-right: calc(var(--relio-espace-3) * -1);
+  padding: 0;
+
+  border: none;
+  border-radius: var(--relio-rayon-md);
+  background: transparent;
+  color: var(--relio-texte-secondaire);
+  cursor: pointer;
+}
+
+.fermer:hover {
+  background: var(--relio-surface-haute);
+  color: var(--relio-texte);
+}

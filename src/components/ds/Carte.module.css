@@ -1,0 +1,50 @@
+.carte {
+  border-radius: var(--relio-rayon-lg);
+  background: var(--relio-surface);
+  color: var(--relio-texte);
+  font-family: var(--relio-police);
+  box-shadow: var(--relio-ombre-sm);
+}
+
+.conteneur {
+  box-shadow: var(--relio-ombre-sm);
+}
+
+/*
+ * `elevee` sert aux panneaux qui doivent se détacher du fond — un menu, une
+ * feuille glissante. C'est la seule place où l'ombre `lg` est justifiée.
+ */
+.elevee {
+  background: var(--relio-surface);
+  box-shadow: var(--relio-ombre-lg);
+}
+
+/*
+ * En mode économie de données, les ombres disparaissent. La bordure prend
+ * le relais avec une valeur de contraste équivalente : l'interface reste
+ * aussi lisible, elle coûte moins d'octets et moins de GPU.
+ */
+.sansOmbre {
+  box-shadow: none;
+}
+
+.bordure {
+  border: 1px solid var(--relio-bordure);
+}
+
+/*
+ * Les cartes conteneur sont posées sur le fond, pas sur une autre carte. Leur
+ * bordure est donc décorative et n'a pas à atteindre 3:1 — la bordure forte
+ * est réservée aux éléments de formulaire, qui doivent être repérables.
+ */
+.paddingSm {
+  padding: var(--relio-espace-3);
+}
+
+.paddingMd {
+  padding: var(--relio-espace-4);
+}
+
+.paddingLg {
+  padding: var(--relio-espace-6);
+}

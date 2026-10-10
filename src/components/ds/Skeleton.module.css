@@ -1,0 +1,19 @@
+.ligne {
+  width: var(--relio-largeur, 100%);
+  height: var(--relio-hauteur, 16px);
+  background: var(--relio-surface-haute);
+  border-radius: var(--relio-rayon-sm);
+}
+
+/* Un arrondi plein sur une ligne de 40 px de haut donne un cercle : c'est ce
+   qu'on veut pour un avatar ou une pastille, et rien d'autre. */
+.rond {
+  border-radius: var(--relio-rayon-full);
+}
+
+.bloc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+  width: var(--relio-largeur, 100%);
+}

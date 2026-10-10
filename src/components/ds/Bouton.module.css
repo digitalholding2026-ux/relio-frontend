@@ -1,0 +1,137 @@
+.bouton {
+  composes: focus from './base.module.css';
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--relio-espace-2);
+
+  /* La cible tactile est une contrainte, pas une conséquence de la taille du
+     texte : `sm` atteint 44 px exactement par cette hauteur minimale. */
+  min-height: var(--relio-tactile-min);
+
+  padding: 0 var(--relio-espace-4);
+  border: 1px solid transparent;
+  border-radius: var(--relio-rayon-md);
+
+  font-family: var(--relio-police);
+  font-weight: var(--relio-gras-semibold);
+  line-height: var(--relio-interligne-titre);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+
+  cursor: pointer;
+  transition: background-color var(--relio-duree-micro) ease,
+    border-color var(--relio-duree-micro) ease, transform var(--relio-duree-micro) ease;
+}
+
+.bouton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.bouton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* --- Tailles -------------------------------------------------------------- */
+
+.sm {
+  padding: 0 var(--relio-espace-3);
+  font-size: var(--relio-taille-sm);
+}
+
+.md {
+  font-size: var(--relio-taille-base);
+}
+
+.lg {
+  padding: 0 var(--relio-espace-6);
+  font-size: var(--relio-taille-lg);
+  border-radius: var(--relio-rayon-lg);
+}
+
+.pleineLargeur {
+  width: 100%;
+}
+
+/* --- Variantes ------------------------------------------------------------ */
+
+/*
+ * `primary` : l'action principale. Indigo de marque, texte blanc — le contraste
+ * mesuré est de 12,67:1.
+ */
+.primary {
+  background: var(--relio-primaire);
+  color: var(--relio-primaire-sur);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--relio-indigo-dark);
+}
+
+/*
+ * `secondary` : surface neutre. La bordure est la bordure forte, celle qui
+ * atteint 3:1 : un bouton doit être identifiable comme bouton.
+ */
+.secondary {
+  background: var(--relio-surface);
+  color: var(--relio-texte);
+  border-color: var(--relio-bordure-forte);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--relio-surface-haute);
+}
+
+/* `ghost` : sans fond, pour une action discrète qui ne doit pas concurrencer. */
+.ghost {
+  background: transparent;
+  color: var(--relio-primaire);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--relio-primaire-doux);
+}
+
+/*
+ * `danger` : le seul accent qui tolère le texte blanc (4,83:1). Orange et vert
+ * portent de l'encre, jamais du blanc — voir `tokens.ts`.
+ */
+.danger {
+  background: var(--relio-alerte);
+  color: var(--relio-alerte-sur);
+}
+
+.danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+/* --- Chargement ------------------------------------------------------------ */
+
+.rotor {
+  animation: rotation var(--relio-duree-standard) linear infinite;
+}
+
+@keyframes rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * Le réglage système « réduire les animations » arrête le rotor.
+ *
+ * Sans cela, l'attente deviendrait infinie et sans retour visuel : l'élève ne
+ * saurait plus si l'action est partie.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rotor {
+    animation: none;
+  }
+
+  .bouton {
+    transition: none;
+  }
+}

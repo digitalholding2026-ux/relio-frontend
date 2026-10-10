@@ -1,0 +1,54 @@
+.enveloppe {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  /* La couleur du tour de piste est portée par `currentColor` : le composant
+     ne définit qu'une couleur, et c'est la couleur du texte environnant qui
+     décide. */
+  color: var(--relio-surface-haute);
+}
+
+.piste {
+  opacity: 1;
+}
+
+.trace {
+  transition: stroke-dasharray var(--relio-duree-standard) ease;
+}
+
+.primaire {
+  stroke: var(--relio-primaire);
+}
+
+.succes {
+  stroke: var(--relio-succes);
+}
+
+.accent {
+  stroke: var(--relio-accent);
+}
+
+.alerte {
+  stroke: var(--relio-alerte);
+}
+
+.centre {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+
+  font-family: var(--relio-police);
+  font-size: var(--relio-taille-lg);
+  font-weight: var(--relio-gras-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--relio-texte);
+  text-align: center;
+  line-height: var(--relio-interligne-titre);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace {
+    transition: none;
+  }
+}
