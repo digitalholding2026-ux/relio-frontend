@@ -353,3 +353,194 @@ body {
     transition: none !important;
   }
 }
+/* ---------------------------------------------------------------------------
+   Chantier 7 — parcours d'exercices
+   Cibles tactiles ≥ 44 px (recommandation pour écran Android étroit, relevée
+   au chantier 4 comme réserve F11 sur les cibles de 42 px).
+   --------------------------------------------------------------------------- */
+
+.lien {
+  color: var(--primaire);
+  text-decoration: underline;
+}
+
+.lien-bouton {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.entete--interne {
+  padding: 2rem 0 1rem;
+}
+
+.bouton--principal {
+  background: var(--primaire);
+  color: #fff;
+  border-color: var(--primaire);
+}
+
+.bouton--principal:hover:not(:disabled) {
+  background: var(--primaire-sombre);
+  border-color: var(--primaire-sombre);
+}
+
+.carte__titre {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.objectifs {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  color: var(--texte-doux);
+  font-size: 0.95rem;
+}
+
+.message-ferme {
+  background: var(--attente-fond);
+  color: var(--attente-texte);
+  border: 1px solid #f0dcb8;
+  border-radius: var(--rayon);
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+}
+
+.exercice-lien {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  text-decoration: none;
+  color: inherit;
+  min-height: 44px;
+}
+
+.exercice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.exercice__enonce {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.exercice__consigne {
+  margin: 0;
+  color: var(--texte-doux);
+}
+
+.exercice__forme {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--primaire);
+  background: var(--primaire-doux);
+  border-radius: var(--rayon);
+  padding: 0.5rem 0.75rem;
+}
+
+.exercice__champ {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.exercice__label {
+  font-size: 0.9rem;
+  color: var(--texte-doux);
+}
+
+.exercice__saisie {
+  min-height: 52px;
+  font-size: 1.15rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  /* 16 px minimum : en dessous, iOS zoome tout seul au focus. */
+  font-family: inherit;
+}
+
+.exercice__saisie:focus {
+  outline: 2px solid var(--primaire);
+  outline-offset: 1px;
+}
+
+.exercice__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.bouton {
+  min-height: 48px;
+  padding: 0 1.1rem;
+  border-radius: var(--rayon);
+  border: 1px solid var(--bordure);
+  background: var(--surface);
+  color: var(--texte);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.indices {
+  border-left: 3px solid var(--primaire-doux);
+  padding-left: 0.9rem;
+}
+
+.indice {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--texte-doux);
+}
+
+.verdict {
+  border-radius: var(--rayon);
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--bordure);
+}
+
+.verdict__statut {
+  margin: 0 0 0.35rem;
+  font-weight: 600;
+}
+
+.verdict__detail {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--texte-doux);
+}
+
+.verdict__detail--discret {
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+.verdict--correcte {
+  background: var(--succes-fond);
+  border-color: #bfe3cd;
+  color: var(--succes-texte);
+}
+
+.verdict--partielle {
+  background: var(--attente-fond);
+  border-color: #f0dcb8;
+  color: var(--attente-texte);
+}
+
+.verdict--fausse,
+.verdict--indeterminee,
+.verdict--alerte {
+  background: var(--alerte-fond);
+  border-color: #f0c8c8;
+  color: var(--alerte-texte);
+}
+
+.verdict--fausse .verdict__detail,
+.verdict--indeterminee .verdict__detail,
+.verdict--alerte {
+  color: inherit;
+}

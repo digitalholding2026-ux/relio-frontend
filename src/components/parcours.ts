@@ -1,4 +1,4 @@
-export type Ton = 'attente' | 'neutre';
+export type Ton = 'succes' | 'attente' | 'neutre';
 
 export interface Etape {
   numero: number;
@@ -11,37 +11,38 @@ export interface Etape {
 /**
  * Étapes du parcours d'apprentissage.
  *
- * ⚠️ Aucune de ces étapes n'est implémentée. Elles décrivent un parcours
- * **prévu**, pas un produit livré. Le rendu affiche explicitement leur état.
+ * `succes` = disponible dans l'application ; `attente` = prévu mais pas encore
+ * livré. Le rendu affiche l'état : rien n'est présenté comme disponible s'il
+ * ne l'est pas.
  */
 export const PARCOURS: Etape[] = [
   {
     numero: 1,
-    titre: 'Mini-diagnostic',
-    detail: 'Quelques questions pour situer tes acquis et te proposer un premier exercice.',
-    etat: 'attente',
+    titre: 'Parcours d’exercices',
+    detail: 'Tes exercices, leçon par leçon, à mesure que le programme les ouvre.',
+    etat: 'succes',
   },
   {
     numero: 2,
-    titre: 'Premier exercice adapté',
-    detail: 'Un exercice choisi selon ton point de départ, avec des indices progressifs.',
-    etat: 'attente',
+    titre: 'Exercices guidés',
+    detail: 'Un exercice à la fois, avec un énoncé et une consigne clairs.',
+    etat: 'succes',
   },
   {
     numero: 3,
     titre: 'Explication et indices',
     detail: 'Trois niveaux d’aide : un rappel, une méthode, puis la première étape.',
-    etat: 'attente',
+    etat: 'succes',
   },
   {
     numero: 4,
-    titre: 'Diagnostic plus complet',
-    detail: 'Un parcours approfondi sur l’ensemble du programme si tu le souhaites.',
+    titre: 'Diagnostic initial',
+    detail: 'Quelques questions pour te proposer un premier exercice adapté.',
     etat: 'attente',
   },
   {
     numero: 5,
-    titre: 'Suivi de la progression',
+    titre: 'Suivi de progression',
     detail: 'Visualiser tes acquis et les notions à consolider.',
     etat: 'neutre',
   },

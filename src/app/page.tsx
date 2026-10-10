@@ -1,28 +1,34 @@
+import Link from 'next/link';
+
 import { ApiStatus } from '@/components/ApiStatus';
 import { PARCOURS } from '@/components/parcours';
 
 const MOTS_CLES = ['Mathématiques', '3e', 'BEPC', 'Cameroun'];
 
-const FONCTIONNALITES_PREVUES = [
+const FONCTIONNALITES = [
+  {
+    titre: 'Parcours d’exercices',
+    detail: 'Trois leçons du programme : calcul littéral, racines carrées, calcul numérique.',
+    etat: 'Disponible',
+    etatClasse: 'succes',
+  },
+  {
+    titre: 'Indices progressifs',
+    detail: 'Trois paliers d’aide : un rappel, une méthode, puis la première étape.',
+    etat: 'Disponible',
+    etatClasse: 'succes',
+  },
   {
     titre: 'Diagnostic initial',
     detail: 'Un court questionnaire ciblé pour situer le niveau de départ.',
     etat: 'Prévu',
-  },
-  {
-    titre: 'Exercices guidés',
-    detail: 'Des exercices adaptés, avec des indices progressifs et des explications.',
-    etat: 'Prévu',
+    etatClasse: 'attente',
   },
   {
     titre: 'Tuteur intelligent',
     detail: 'Une assistance pédagogique adaptée à ton niveau.',
     etat: 'Non planifié',
-  },
-  {
-    titre: 'Suivi de progression',
-    detail: 'Un tableau de tes acquis et des notions à retravailler.',
-    etat: 'Non planifié',
+    etatClasse: 'neutre',
   },
 ];
 
@@ -68,24 +74,39 @@ export default function Accueil() {
       </header>
 
       <main className="conteneur">
+        <section className="section" aria-labelledby="titre-appel">
+          <h2 className="section__titre" id="titre-appel">
+            Commencer
+          </h2>
+          <p className="section__note">
+            Les exercices s’ouvrent à la semaine où la leçon est enseignée, pour ne
+            jamais te demander une notion que tu n’as pas encore vue.
+          </p>
+          <p>
+            <Link className="bouton bouton--principal lien-bouton" href="/parcours">
+              Voir le parcours
+            </Link>
+          </p>
+        </section>
+
         <div className="avertissement" role="note">
           <span className="avertissement__icone" aria-hidden="true">
             !
           </span>
           <span>
-            <strong>Version de démonstration.</strong> Relio est en cours de
-            construction. Aucune fonctionnalité pédagogique n’est encore
-            disponible : ce qui suit décrit un parcours <em>prévu</em>, pas un
-            produit livré.
+            <strong>Première version.</strong> Le parcours couvre trois leçons du
+            programme, et rien de plus encore : ni diagnostic complet, ni tuteur, ni
+            notation. Ce qui suit décrit ce qui est réellement disponible.
           </span>
         </div>
 
         <section className="section" aria-labelledby="titre-parcours">
           <h2 className="section__titre" id="titre-parcours">
-            Le parcours prévu
+            Le parcours
           </h2>
           <p className="section__note">
-            Cinq étapes. Aucune n’est encore accessible.
+            De la première idée de tes acquis à l’entraînement. Toutes les étapes
+            affichées ici sont disponibles.
           </p>
           <div className="grille">
             {PARCOURS.map((etape) => (
@@ -96,12 +117,8 @@ export default function Accueil() {
                 <div className="etape__corps">
                   <div className="etat-api__ligne">
                     <h3 className="etape__titre">{etape.titre}</h3>
-                    <span
-                      className={
-                        etape.etat === 'attente' ? 'badge badge--attente' : 'badge badge--neutre'
-                      }
-                    >
-                      {etape.etat === 'attente' ? 'Bientôt' : 'Prévu'}
+                    <span className={`badge badge--${etape.etat}`}>
+                      {etape.etat === 'succes' ? 'Disponible' : 'Bientôt'}
                     </span>
                   </div>
                   <p className="etape__detail">{etape.detail}</p>
@@ -116,20 +133,14 @@ export default function Accueil() {
             État des fonctionnalités
           </h2>
           <p className="section__note">
-            Ce que Relio prévoit de proposer, avec son état réel aujourd’hui.
+            Ce que Relio propose aujourd’hui, et ce qui ne l’est pas encore.
           </p>
           <div className="grille">
-            {FONCTIONNALITES_PREVUES.map((fonctionnalite) => (
+            {FONCTIONNALITES.map((fonctionnalite) => (
               <article className="carte" key={fonctionnalite.titre}>
                 <div className="etat-api__ligne">
                   <h3 className="etape__titre">{fonctionnalite.titre}</h3>
-                  <span
-                    className={
-                      fonctionnalite.etat === 'Prévu'
-                        ? 'badge badge--attente'
-                        : 'badge badge--neutre'
-                    }
-                  >
+                  <span className={`badge badge--${fonctionnalite.etatClasse}`}>
                     {fonctionnalite.etat}
                   </span>
                 </div>
@@ -159,8 +170,8 @@ export default function Accueil() {
             Cameroun.
           </p>
           <p>
-            Socle technique v0.1. Aucun contenu d’épreuve officielle n’est
-            reproduit. Aucune donnée personnelle n’est collectée.
+            Aucun contenu d’épreuve officielle n’est reproduit. Aucune donnée
+            personnelle n’est collectée, et tes réponses ne sont pas conservées.
           </p>
         </div>
       </footer>
