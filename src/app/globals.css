@@ -580,9 +580,10 @@ body {
      exigence explicite du chantier. Une frappe au doigt n'est envisageable que
      si la cible fait au moins 44 px de côté —riterion retenu par les
      recommendations d'accessibilité mobile.
-   - La grille est déclarée en **4 colonnes**, ce qui laisse environ 80 px par
-     touche sur un écran de 360 px. En dessous, la saisie au doigt devient
-     imprécise.
+   - Chaque rangée est une grille de **4 colonnes**, ce qui laisse environ
+     80 px par touche sur un écran de 360 px. En dessous, la saisie au doigt
+     devient imprécise. Une rangée occupe toujours exactement quatre colonnes :
+     une touche qui déborderait sortirait de l'écran.
    - Aucune animation ni transition : elles coûtent des octets et de la
      batterie sur des appareils d'entrée de gamme, sans apporter d'information.
    =========================================================================== */
@@ -598,10 +599,16 @@ body {
   z-index: 10;
 }
 
-.clavier__grille {
+.clavier__rangee {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--colonnes, 4), minmax(0, 1fr));
   gap: 6px;
+}
+
+/* Écart entre deux rangées plus faible qu'entre deux touches : la grille doit
+   se lire comme un bloc de chiffres, pas comme une liste de touches. */
+.clavier__rangee + .clavier__rangee {
+  margin-top: 5px;
 }
 
 .clavier__touche {

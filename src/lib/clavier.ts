@@ -61,8 +61,8 @@ export interface Touche {
   readonly aria: string;
   /** Action de la touche. */
   readonly action: ToucheAction;
-  /** Élargissement de la touche, de 1 à 3 colonnes. */
-  readonly largeur?: 1 | 2 | 3;
+  /** Élargissement de la touche, en colonnes de la grille. */
+  readonly largeur?: 1 | 2 | 3 | 4;
 }
 
 export type ToucheAction =
@@ -170,167 +170,236 @@ export function creerFraction(etat: EtatSaisie): EtatSaisie {
 // Jeu de touches
 // ---------------------------------------------------------------------------
 
-/** Chiffres et point décimal, communs à tous les types. */
-const CHIFFRES: Touche[] = [
-  { id: '7', libelle: '7', aria: 'Sept', action: { type: 'inserer', texte: '7' } },
-  { id: '8', libelle: '8', aria: 'Huit', action: { type: 'inserer', texte: '8' } },
-  { id: '9', libelle: '9', aria: 'Neuf', action: { type: 'inserer', texte: '9' } },
-  { id: '4', libelle: '4', aria: 'Quatre', action: { type: 'inserer', texte: '4' } },
-  { id: '5', libelle: '5', aria: 'Cinq', action: { type: 'inserer', texte: '5' } },
-  { id: '6', libelle: '6', aria: 'Six', action: { type: 'inserer', texte: '6' } },
-  { id: '1', libelle: '1', aria: 'Un', action: { type: 'inserer', texte: '1' } },
-  { id: '2', libelle: '2', aria: 'Deux', action: { type: 'inserer', texte: '2' } },
-  { id: '3', libelle: '3', aria: 'Trois', action: { type: 'inserer', texte: '3' } },
-  { id: '0', libelle: '0', aria: 'Zéro', action: { type: 'inserer', texte: '0' } },
-  {
-    id: 'virgule',
-    libelle: ',',
-    aria: 'Virgule décimale',
-    action: { type: 'inserer', texte: '.' },
-  },
-];
-
 /**
- * Touches communes à tous les exercices.
+ * Une ligne du clavier.
  *
- * `√` et la barre de fraction **n'y figurent pas** : leur présence dépend du
- * type de grandeur attendue, et les afficher ailleurs ferait composer une
- * réponse que le moteur refuse.
- */
-const COMMUNES: Touche[] = [
-  { id: 'moins', libelle: '−', aria: 'Moins', action: { type: 'inserer', texte: '−' } },
-  { id: 'plus', libelle: '+', aria: 'Plus', action: { type: 'inserer', texte: '+' } },
-];
-
-/** Touches propres aux expressions algébriques. */
-const ALGEBRE: Touche[] = [
-  { id: 'x', libelle: 'x', aria: 'Lettre x', action: { type: 'inserer', texte: 'x' } },
-  { id: 'croix', libelle: '×', aria: 'Multiplié par', action: { type: 'inserer', texte: '×' } },
-  {
-    id: 'division',
-    libelle: '÷',
-    aria: 'Divisé par',
-    action: { type: 'inserer', texte: '/' },
-  },
-  {
-    id: 'puissance2',
-    libelle: 'x²',
-    aria: 'Puissance deux',
-    action: { type: 'inserer', texte: '^2' },
-  },
-  {
-    id: 'puissance3',
-    libelle: 'x³',
-    aria: 'Puissance trois',
-    action: { type: 'inserer', texte: '^3' },
-  },
-  {
-    id: 'puissance',
-    libelle: 'xⁿ',
-    aria: 'Puissance, followed by the exponent',
-    action: { type: 'inserer', texte: '^' },
-  },
-  {
-    id: 'parOuvrante',
-    libelle: '(',
-    aria: 'Parenthèse ouvrante',
-    action: { type: 'inserer', texte: '(' },
-    largeur: 2,
-  },
-  {
-    id: 'parFermante',
-    libelle: ')',
-    aria: 'Parenthèse fermante',
-    action: { type: 'inserer', texte: ')' },
-    largeur: 2,
-  },
-];
-
-/** Touche racine : proposée uniquement pour `typeReponse === 'racine'`. */
-const RACINE: Touche[] = [
-  {
-    id: 'racine',
-    libelle: '√',
-    aria: 'Racine carrée, followed by the number under it',
-    action: { type: 'inserer', texte: '√' },
-    largeur: 2,
-  },
-  {
-    id: 'parOuvranteRacine',
-    libelle: '(',
-    aria: 'Parenthèse ouvrante',
-    action: { type: 'inserer', texte: '(' },
-  },
-  {
-    id: 'parFermanteRacine',
-    libelle: ')',
-    aria: 'Parenthèse fermante',
-    action: { type: 'inserer', texte: ')' },
-  },
-];
-
-/** Touche fraction : proposée uniquement pour `typeReponse === 'rationnelle'`. */
-const FRACTION: Touche[] = [
-  {
-    id: 'fraction',
-    libelle: '⅗',
-    aria: 'Fraction, pour écrire un numérateur et un dénominateur',
-    action: { type: 'fraction' },
-    largeur: 2,
-  },
-];
-
-/** Touche `=` : utile à l'élève, neutre pour l'analyseur. */
-const EGAL: Touche = {
-  id: 'egal',
-  libelle: '=',
-  aria: 'Égal',
-  action: { type: 'inserer', texte: '=' },
-};
-
-/** Touches de contrôle, communes. */
-const CONTROLE: Touche[] = [
-  { id: 'gauche', libelle: '←', aria: 'Déplacer le curseur à gauche', action: { type: 'deplacer', pas: -1 } },
-  { id: 'droite', libelle: '→', aria: 'Déplacer le curseur à droite', action: { type: 'deplacer', pas: 1 } },
-  { id: 'retour', libelle: '⌫', aria: 'Effacer le dernier caractère', action: { type: 'retirer' }, largeur: 2 },
-  { id: 'effacer', libelle: 'C', aria: 'Effacer toute la réponse', action: { type: 'effacer' } },
-  { id: 'valider', libelle: 'Vérifier', aria: 'Vérifier ma réponse', action: { type: 'valider' }, largeur: 3 },
-  { id: 'fermer', libelle: 'Masquer le clavier', aria: 'Masquer le clavier mathématique', action: { type: 'fermer' } },
-  { id: 'systeme', libelle: 'Clavier système', aria: 'Utiliser le clavier du téléphone', action: { type: 'systeme' }, largeur: 3 },
-];
-
-/**
- * Range de touches correspondant au type de grandeur attendue.
+ * ## Pourquoi des lignes et non une liste à plat
  *
- * L'ordre est pensé pour le pouce : chiffres au centre, opérations autour,
- * validation en pleine largeur.
+ * Une liste à plat ne dit rien de l'agencement : il faut la reconstruire à la
+ * main dans le composant, et l'ordre obtenue est un mélange de chiffres et
+ * d'opérateurs. La disposition est ici **déclarée** : chaque ligne fait
+ * quatre colonnes, les chiffres occupent la gauche, les opérateurs la droite.
+ *
+ * C'est la disposition d'une calculatrice de poche, familière à l'élève, et
+ * non une grille où il faut chercher le `+` entre deux `7`.
  */
-export function touchesPour(type: TypeReponse): Touche[] {
-  const base: Touche[] = [];
 
-  if (type === 'expression') {
-    base.push(...CHIFFRES.slice(0, 3), ...ALGEBRE.slice(0, 3));
-    base.push(...CHIFFRES.slice(3, 6), ...ALGEBRE.slice(3, 5));
-    base.push(...CHIFFRES.slice(6, 9), ALGEBRE[5]!, EGAL);
-    base.push(...CHIFFRES.slice(9), ALGEBRE[6]!, ALGEBRE[7]!);
-    base.push(...COMMUNES);
-  } else if (type === 'racine') {
-    base.push(...CHIFFRES.slice(0, 3), RACINE[0]!);
-    base.push(...CHIFFRES.slice(3, 6), RACINE[1]!, RACINE[2]!);
-    base.push(...CHIFFRES.slice(6, 9), EGAL);
-    base.push(...CHIFFRES.slice(9));
-    base.push(...COMMUNES);
-  } else {
-    base.push(...CHIFFRES.slice(0, 3), FRACTION[0]!);
-    base.push(...CHIFFRES.slice(3, 6));
-    base.push(...CHIFFRES.slice(6, 9), EGAL);
-    base.push(...CHIFFRES.slice(9));
-    base.push(...COMMUNES);
-  }
+/** Nombre de colonnes de la grille. */
+export const COLONNES = 4;
 
-  return [...base, ...CONTROLE];
+/** Un chiffre. */
+function chiffre(n: number): Touche {
+  const mots: Record<number, string> = {
+    0: 'Zéro',
+    1: 'Un',
+    2: 'Deux',
+    3: 'Trois',
+    4: 'Quatre',
+    5: 'Cinq',
+    6: 'Six',
+    7: 'Sept',
+    8: 'Huit',
+    9: 'Neuf',
+  };
+  const valeur = String(n);
+  return {
+    id: `chiffre-${valeur}`,
+    libelle: valeur,
+    aria: mots[n] ?? valeur,
+    action: { type: 'inserer', texte: valeur },
+  };
 }
 
+/** Un symbole nommé. */
+function symbole(
+  id: string,
+  libelle: string,
+  aria: string,
+  texte: string,
+  largeur: 1 | 2 | 3 = 1,
+): Touche {
+  return { id, libelle, aria, action: { type: 'inserer', texte }, largeur };
+}
+
+/** La virgule décimale. Insère un point : le seul décimal que l'analyseur lit. */
+const VIRGULE = symbole('virgule', ',', 'Virgule décimale', '.');
+
+/** Parenthèses, une par ligne du clavier où elles servent. */
+const PARENTHESES: Touche[] = [
+  symbole('parOuvrante', '(', 'Parenthèse ouvrante', '(', 2),
+  symbole('parFermante', ')', 'Parenthèse fermante', ')', 2),
+];
+
+/** Les quatre opérations, dans l'ordre de la colonne de droite. */
+const OPERATIONS: Touche[] = [
+  symbole('division', '÷', 'Divisé par', '/'),
+  symbole('croix', '×', 'Multiplié par', '×'),
+  symbole('moins', '−', 'Moins', '−'),
+  symbole('plus', '+', 'Plus', '+'),
+];
+
+/** Touches de correction : elles agissent sur le curseur, elles n'insèrent rien. */
+const CORRECTION_REEL: Touche[] = [
+  { id: 'gauche', libelle: '←', aria: 'Déplacer le curseur à gauche', action: { type: 'deplacer', pas: -1 } },
+  { id: 'droite', libelle: '→', aria: 'Déplacer le curseur à droite', action: { type: 'deplacer', pas: 1 } },
+  { id: 'retour', libelle: '⌫', aria: 'Effacer le dernier caractère', action: { type: 'retirer' }, largeur: 1 },
+  { id: 'effacer', libelle: 'C', aria: 'Effacer toute la réponse', action: { type: 'effacer' } },
+];
+
+/**
+ * Touches de fraction, propres aux réponses rationnelles.
+ *
+ * La barre produit un numérateur et un dénominateur distincts, dans le format
+ * que l'analyseur rationnel lit déjà (`n/d`).
+ */
+const FRACTION: Touche = {
+  id: 'fraction',
+  libelle: '⅗',
+  aria: 'Fraction, pour écrire un numérateur et un dénominateur',
+  action: { type: 'fraction' },
+};
+
+/** Racine carrée, propre aux réponses de type `racine`. */
+const RACINE_CARREE: Touche = {
+  id: 'racine',
+  libelle: '√',
+  aria: 'Racine carrée, followed by the number under it',
+  action: { type: 'inserer', texte: '√' },
+};
+
+/** Puissances, propres aux expressions. */
+const PUISSANCES: Touche[] = [
+  symbole('puissance2', 'x²', 'Puissance deux', '^2'),
+  symbole('puissance3', 'x³', 'Puissance trois', '^3'),
+  symbole('puissance', 'xⁿ', 'Puissance, followed by the exponent', '^'),
+];
+
+/**
+ * Le signe `=`, qui se comporte comme un caractère dans les dispositions
+ * d'expression et de racine.
+ */
+const EGAL: Touche = symbole('egal', '=', 'Égal', '=');
+
+/**
+ * Le signe `=` en pleine largeur, pour les exercices de calcul fractionnaire :
+ * y terminer le calcul est l'acte même de l'exercice, la touche mérite donc sa
+ * propre rangée.
+ */
+const EGAL_PLEIN_LARGEUR: Touche = { ...EGAL, largeur: 4 };
+
+/** Touches de service : validation, fermeture, clavier système. */
+const SERVICE: Touche[] = [
+  { id: 'valider', libelle: 'Vérifier', aria: 'Vérifier ma réponse', action: { type: 'valider' }, largeur: 4 },
+  { id: 'fermer', libelle: 'Masquer', aria: 'Masquer le clavier mathématique', action: { type: 'fermer' }, largeur: 2 },
+  { id: 'systeme', libelle: 'Clavier système', aria: 'Utiliser le clavier du téléphone', action: { type: 'systeme' }, largeur: 2 },
+];
+
+/** Une ligne du clavier. */
+export interface RangeeClavier {
+  readonly touches: readonly Touche[];
+}
+
+function rangee(...touches: Touche[]): RangeeClavier {
+  return { touches };
+}
+
+/** Lignes communes : correction, masquage et clavier système, puis validation. */
+const RANGEES_SERVICE: RangeeClavier[] = [
+  rangee(...CORRECTION_REEL),
+  rangee(SERVICE[1]!, SERVICE[2]!),
+  rangee(SERVICE[0]!),
+];
+
+/**
+ * Disposition d'un exercice de **calcul littéral**.
+ *
+ *     7 8 9 ÷
+ *     4 5 6 ×
+ *     1 2 3 −
+ *     0 , x +
+ *     x² x³ xⁿ =
+ *     (        )        ← deux touches de deux colonnes
+ *     ← → ⌫ C
+ *     Masquer     Clavier système
+ *     Vérifier
+ *
+ * Les chiffres occupent la partie gauche, les opérations la colonne de droite :
+ * la main trouve `/` et `−` au même endroit à chaque ligne.
+ */
+const RANGEES_EXPRESSION: RangeeClavier[] = [
+  rangee(chiffre(7), chiffre(8), chiffre(9), OPERATIONS[0]!),
+  rangee(chiffre(4), chiffre(5), chiffre(6), OPERATIONS[1]!),
+  rangee(chiffre(1), chiffre(2), chiffre(3), OPERATIONS[2]!),
+  rangee(chiffre(0), VIRGULE, symbole('x', 'x', 'Lettre x', 'x'), OPERATIONS[3]!),
+  rangee(PUISSANCES[0]!, PUISSANCES[1]!, PUISSANCES[2]!, EGAL),
+  rangee(...PARENTHESES),
+  ...RANGEES_SERVICE,
+];
+
+/**
+ * Disposition d'un exercice de **racines carrées**.
+ *
+ * La racine prend la place de la division dans la colonne de droite : c'est
+ * l'opération principale de ces exercices, et elle doit être atteinte aussi
+ * vite qu'un chiffre.
+ */
+const RANGEES_RACINE: RangeeClavier[] = [
+  rangee(chiffre(7), chiffre(8), chiffre(9), RACINE_CARREE),
+  rangee(chiffre(4), chiffre(5), chiffre(6), OPERATIONS[1]!),
+  rangee(chiffre(1), chiffre(2), chiffre(3), OPERATIONS[0]!),
+  rangee(chiffre(0), VIRGULE, OPERATIONS[2]!, OPERATIONS[3]!),
+  rangee(...PARENTHESES),
+  rangee(EGAL_PLEIN_LARGEUR),
+  ...RANGEES_SERVICE,
+];
+
+/**
+ * Disposition d'un exercice de **calcul fractionnaire**.
+ *
+ * La barre de fraction occupe la colonne des opérations : c'est l'opération
+ * que l'élève cherche, plus que la multiplication.
+ */
+const RANGEES_RATIONNELLE: RangeeClavier[] = [
+  rangee(chiffre(7), chiffre(8), chiffre(9), FRACTION),
+  rangee(chiffre(4), chiffre(5), chiffre(6), OPERATIONS[1]!),
+  rangee(chiffre(1), chiffre(2), chiffre(3), OPERATIONS[0]!),
+  rangee(chiffre(0), VIRGULE, OPERATIONS[2]!, OPERATIONS[3]!),
+  rangee(EGAL_PLEIN_LARGEUR),
+  ...RANGEES_SERVICE,
+];
+
+/**
+ * Disposition complète du clavier pour un type de grandeur.
+ *
+ * Chaque ligne occupe **exactement** `COLONNES` colonnes, la somme des
+ * `largeur` de ses touches. Cette invariant est vérifiée par les tests : une
+ * ligne débordant de la grille produirait une touche hors écran sur un téléphone.
+ */
+export function rangeesPour(type: TypeReponse): RangeeClavier[] {
+  if (type === 'expression') return RANGEES_EXPRESSION;
+  if (type === 'racine') return RANGEES_RACINE;
+  return RANGEES_RATIONNELLE;
+}
+
+/**
+ * Toutes les touches, à plat.
+ *
+ * Utile aux tests et à toute recherche par identifiant. Le rendu, lui, se fait
+ * par rangées : l'ordre à plat n'a pas de sens visuel.
+ */
+export function touchesPour(type: TypeReponse): Touche[] {
+  return rangeesPour(type).flatMap((r) => [...r.touches]);
+}
+
+/**
+ * Largeur totale occupée par une rangée, en colonnes.
+ *
+ * Exposée pour que le composant et les tests partagent la même règle de mise en
+ * page, sans la dupliquer.
+ */
+export function largeurRangee(r: RangeeClavier): number {
+  return r.touches.reduce((total, t) => total + (t.largeur ?? 1), 0);
+}
 // ---------------------------------------------------------------------------
 // Aperçu lisible
 // ---------------------------------------------------------------------------

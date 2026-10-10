@@ -44,8 +44,9 @@ import {
   deplacer,
   effacerTout,
   inserer,
+  rangeesPour,
   retirer,
-  touchesPour,
+  COLONNES,
   type EtatSaisie,
   type ToucheAction,
   type TypeReponse,
@@ -86,7 +87,7 @@ export function ClavierMath({
   champId,
   champRef,
 }: ClavierMathProps) {
-  const touches = touchesPour(typeReponse);
+  const rangees = rangeesPour(typeReponse);
 
   /**
    * Applique l'action au texte, puis rend la position.
@@ -163,29 +164,37 @@ export function ClavierMath({
     champRef.current?.focus({ preventScroll: true });
   }, []);
 
-  return (
+return (
     <div className="clavier" role="group" aria-label="Clavier mathématique">
-      <div className="clavier__grille">
-        {touches.map((touche) => (
-          <button
-            key={touche.id}
-            type="button"
-            className="bouton clavier__touche"
-            style={touche.largeur ? { gridColumn: `span ${touche.largeur}` } : undefined}
-            aria-label={touche.aria}
-            aria-controls={champId}
-            // `onPointerDown` et non `onClick` : sur Android, le `click` arrive
-            // après un délai pendant lequel le champ a perdu le focus — et le
-            // curseur avec.
-            onPointerDown={(evenement) => {
-              evenement.preventDefault();
-              appuyer(touche.action);
-            }}
-          >
-            {touche.libelle}
-          </button>
-        ))}
-      </div>
+      {rangees.map((rangee, index) => (
+        <div
+          // Chaque rangée est une grille indépendante de quatre colonnes : le
+          // regroupement visuel est fait par le CSS, pas par des sauts de ligne.
+          className="clavier__rangee"
+          key={`rangee-${index}`}
+          style={{ ['--colonnes' as string]: String(COLONNES) }}
+        >
+          {rangee.touches.map((touche) => (
+            <button
+              key={touche.id}
+              type="button"
+              className={`bouton clavier__touche clavier__touche--${touche.id}`}
+              style={touche.largeur ? { gridColumn: `span ${touche.largeur}` } : undefined}
+              aria-label={touche.aria}
+              aria-controls={champId}
+              // `onPointerDown` et non `onClick` : sur Android, le `click` arrive
+              // après un délai pendant lequel le champ a perdu le focus — et le
+              // curseur avec.
+              onPointerDown={(evenement) => {
+                evenement.preventDefault();
+                appuyer(touche.action);
+              }}
+            >
+              {touche.libelle}
+            </button>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

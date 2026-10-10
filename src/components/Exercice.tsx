@@ -43,7 +43,7 @@ import {
  *    unique : le serveur renvoie une échelle de trois niveaux, choisie selon le
  *    verdict et le nombre d'échecs réellement essuyés. Cet écran se contente
  *    d'afficher `tutorat.message` — il ne décide jamais du niveau.
- * 2. **Clavier mathématique.** Ouverture au focus du champ, touches
+ * 2. **Clavier mathématique.** Ouverture automatique au toucher du champ, touches
  *    spécifiques, fermeture et réouverture, bascule vers le clavier système.
  * 3. **Mémoire locale.** Chaque tentative est consignée dans le navigateur de
  *    l'élève, puis renvoyée au serveur pour le suivi. Rien n'est stocké côté
@@ -188,9 +188,16 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
     if (texte !== null) setIndices((actuels) => [...actuels, texte]);
   }
 
-  /** Ouvre le clavier mathématique, ou le clavier système si choisi. */
+  /**
+   * Ouvre le clavier mathématique dès que l'élève touche le champ.
+   *
+   * `onClick` et non `onFocus` : après avoir masqué le clavier, le champ reste
+   * focalisé, et un second appui ne déclencherait donc plus `focus`. C'est
+   * `click` qui permet de le rouvrir sans aucun bouton supplémentaire.
+   */
   function activerSaisie() {
-    if (!clavierSysteme) setClavierOuvert(true);
+    if (clavierSysteme) return;
+    setClavierOuvert(true);
   }
 
   function basculerSysteme() {
@@ -253,6 +260,7 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
           autoCapitalize="off"
           spellCheck={false}
           onFocus={activerSaisie}
+          onClick={activerSaisie}
           placeholder={
             // Exemples **structurels uniquement** : un exemple chiffré
             // pourrait coïncider avec la réponse attendue d'un exercice et
@@ -293,15 +301,17 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
             {aidesRestantes === 1 ? 'Un indice' : `Un indice (${aidesRestantes})`}
           </button>
         )}
-        {/* Le bouton n'apparaît que lorsque le clavier est fermé : la fermeture
-            et la réouverture se font depuis le clavier lui-même, qui porte
-            toujours ces deux actions. */}
-        {!clavierSysteme && !clavierOuvert && (
-          <button className="bouton" type="button" onClick={activerSaisie}>
-            Clavier mathématique
-          </button>
-        )}
       </div>
+
+      {/* Tant que l'élève est en clavier système, le clavier mathématique est
+          hors d'atteinte : ce bouton est le seul moyen d'y revenir. Il ne sert
+          donc jamais à *demander* l'affichage du clavier — c'est le champ qui
+          s'en charge. */}
+      {clavierSysteme && !clavierOuvert && (
+        <button className="bouton" type="button" onClick={basculerSysteme}>
+          Revenir au clavier mathématique
+        </button>
+      )}
 
       {clavierOuvert && !clavierSysteme && (
         <ClavierMath

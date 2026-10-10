@@ -23,7 +23,10 @@ import { describe, it } from 'node:test';
 
 import {
   apercuLisible,
+  COLONNES,
   creerFraction,
+  largeurRangee,
+  rangeesPour,
   deplacer,
   effacerTout,
   inserer,
@@ -323,5 +326,119 @@ describe('7.5 — l’aperçu est lisible et sans effet', () => {
 
   it('ne laisse fuir aucun caractère illisible', () => {
     assert.doesNotMatch(apercuLisible('$$$'), /\$/);
+  });
+});
+describe('7.5.1 — la disposition est organisée, pas empilée', () => {
+  it('compose chaque rangée de exactement quatre colonnes', () => {
+    // Une rangée qui déborde pousserait une touche hors de l'écran sur un
+    // téléphone : la somme des largeurs doit valoir exactement la largeur de
+    // la grille.
+    for (const type of ['rationnelle', 'expression', 'racine'] as const) {
+      for (const [index, rangee] of rangeesPour(type).entries()) {
+        assert.equal(
+          largeurRangee(rangee),
+          COLONNES,
+          `${type} rangée ${index} : ${largeurRangee(rangee)} colonnes au lieu de ${COLONNES}.`,
+        );
+      }
+    }
+  });
+
+  it('n’a aucune rangée vide ni rangée fantôme', () => {
+    for (const type of ['rationnelle', 'expression', 'racine'] as const) {
+      for (const rangee of rangeesPour(type)) {
+        assert.ok(rangee.touches.length > 0, `${type} : rangée vide.`);
+      }
+    }
+  });
+
+  it('place les chiffres sur la gauche et les opérations à droite', () => {
+    // Disposition de calculatrice : l'élève retrouve ÷ et − au même endroit.
+    for (const type of ['rationnelle', 'expression', 'racine'] as const) {
+      const rangees = rangeesPour(type).slice(0, 4);
+      for (const [index, rangee] of rangees.entries()) {
+        const premier = rangee.touches[0];
+        const dernier = rangee.touches[rangee.touches.length - 1];
+        assert.match(premier?.id ?? '', /^chiffre-/, `${type} rangée ${index} : la première colonne n'est pas un chiffre.`);
+        assert.ok(
+          ['division', 'croix', 'moins', 'plus', 'fraction', 'racine', 'x'].includes(dernier?.id ?? ''),
+          `${type} rangée ${index} : la colonne de droite n’est pas une opération (${dernier?.id}).`,
+        );
+      }
+    }
+  });
+
+  it('garde les chiffres dans l’ordre décroissant puis nul', () => {
+    const suite = rangeesPour('expression')
+      .slice(0, 4)
+      .flatMap((r) => r.touches.map((t) => t.id));
+    assert.deepEqual(suite, [
+      'chiffre-7',
+      'chiffre-8',
+      'chiffre-9',
+      'division',
+      'chiffre-4',
+      'chiffre-5',
+      'chiffre-6',
+      'croix',
+      'chiffre-1',
+      'chiffre-2',
+      'chiffre-3',
+      'moins',
+      'chiffre-0',
+      'virgule',
+      'x',
+      'plus',
+    ]);
+  });
+
+  it('termine par la validation, la dernière touche du clavier', () => {
+    // La validation ne doit jamais être buried au milieu des caractères.
+    for (const type of ['rationnelle', 'expression', 'racine'] as const) {
+      const derniere = touchesPour(type).at(-1);
+      assert.equal(derniere?.id, 'valider', `${type} : la dernière touche doit être la validation.`);
+      assert.equal(derniere.largeur, 4, `${type} : la validation doit occuper toute la largeur.`);
+    }
+  });
+
+  it('garde la correction et le masquage juste avant la validation', () => {
+    const ids = touchesPour('expression').map((t) => t.id);
+    const iCorrection = ids.indexOf('gauche');
+    const iMasque = ids.indexOf('fermer');
+    const iValider = ids.indexOf('valider');
+    assert.ok(iCorrection < iMasque && iMasque < iValider, `ordre inattendu : ${ids.join(', ')}`);
+  });
+
+  it('donne un identifiant unique à chaque touche, tous types confondus', () => {
+    for (const type of ['rationnelle', 'expression', 'racine'] as const) {
+      const ids = touchesPour(type).map((t) => t.id);
+      assert.equal(new Set(ids).size, ids.length, `${type} : identifiants dupliqués.`);
+    }
+  });
+
+  it('donne à chaque chiffre un libellé accessible nommé', () => {
+    // Un chiffre affiché seul est ambigu : « 1 » se lit « un ».
+    const attendu: Record<string, string> = {
+      'chiffre-0': 'Zéro',
+      'chiffre-1': 'Un',
+      'chiffre-7': 'Sept',
+      'chiffre-9': 'Neuf',
+    };
+    for (const type of ['rationnelle', 'expression', 'racine'] as const) {
+      for (const [id, aria] of Object.entries(attendu)) {
+        const touche = touchesPour(type).find((t) => t.id === id);
+        assert.equal(touche?.aria, aria, `${type}/${id}`);
+      }
+    }
+  });
+
+  it('propose la racine dans la colonne des opérations d’un exercice de racines', () => {
+    const premiere = rangeesPour('racine')[0];
+    assert.equal(premiere?.touches.at(-1)?.id, 'racine');
+  });
+
+  it('propose la fraction dans la colonne des opérations d’un exercice fractionnaire', () => {
+    const premiere = rangeesPour('rationnelle')[0];
+    assert.equal(premiere?.touches.at(-1)?.id, 'fraction');
   });
 });
