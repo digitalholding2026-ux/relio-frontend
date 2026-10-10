@@ -70,10 +70,10 @@ export interface SuiviObjectif {
  * qu'il sait : la réussite a eu lieu, mais après des aides.
  */
 export const LIBELLE_SUIVI: Readonly<Record<SuiviObjectif['niveau'], string>> = {
-  donnee_insuffisante: 'Pas encore assez de travail pour conclure.',
-  reussite_immediate: 'Réussis du premier coup sur plusieurs exercices.',
-  a_confirmer: 'Réussis, mais avec des aides : à retravailler pour être sûr.',
-  difficulte: 'Difficulté constatée sur plusieurs tentatives.',
+  donnee_insuffisante: 'Tu n’as pas encore assez travaillé pour que je puisse dire.',
+  reussite_immediate: 'Tu as réussi du premier coup plusieurs exercices.',
+  a_confirmer: 'Tu as réussi avec de l’aide. Essaie seul la prochaine fois pour être sûr.',
+  difficulte: 'C’est difficile pour toi en ce moment. Demande un indice.',
 };
 
 /**
@@ -84,20 +84,20 @@ export const LIBELLE_SUIVI: Readonly<Record<SuiviObjectif['niveau'], string>> = 
  */
 export const LIBELLE_CATEGORIE: Readonly<Record<string, string>> = {
   oubli_de_distribuer_un_facteur:
-    'oubli d’un facteur lors de la distribution',
+    'un facteur oublié dans la multiplication',
   erreur_de_signe: 'signe',
   reduction_incomplete: 'réduction incomplète',
-  facteur_commun_non_identifie: 'facteur commun non identifié',
-  simplification_de_racine_incomplete: 'simplification de racine incomplète',
-  fraction_non_reduite: 'fraction non réduite',
-  reponse_illisible: 'réponse illisible',
-  erreur_non_identifiee: 'difficulté non identifiée',
+  facteur_commun_non_identifie: 'nombre ou lettre commun non trouvé',
+  simplification_de_racine_incomplete: 'racine pas finie',
+  fraction_non_reduite: 'fraction pas simplifiée',
+  reponse_illisible: 'réponse pas lisible',
+  erreur_non_identifiee: 'difficulté que je n’ai pas su nommer',
 };
 
 /** Traduit une catégorie de difficulté, sans jamais montrer la clé brute. */
 export function libelleCategorie(categorie: string | null | undefined): string {
   if (categorie === null || categorie === undefined) return '';
-  return LIBELLE_CATEGORIE[categorie] ?? 'difficulté non identifiée';
+  return LIBELLE_CATEGORIE[categorie] ?? 'difficulté que je n’ai pas su nommer';
 }
 
 /** Décide du texte d'aide réellement affiché. */

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ClavierMath } from '@/components/ClavierMath';
+import { useHauteurClavierSysteme } from '@/hooks/useHauteurClavierSysteme';
 import {
   apercuLisible,
   saisieVide,
@@ -103,6 +104,11 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
   const [clavierSysteme, setClavierSysteme] = useState(false);
   const champRef = useRef<HTMLInputElement | null>(null);
 
+  // Hauteur du clavier système : sans cette mesure, la page continue de croire
+  // que l'écran fait 640 px de haut et le clavier mathématique passe dessous.
+  const clavierSystemeVisible = useHauteurClavierSysteme();
+  const composeurRef = useRef<HTMLDivElement | null>(null);
+
   // --- Suivi local (chantier 7.5) -------------------------------------------
   const [tentatives, setTentatives] = useState(0);
   const [suivi, setSuivi] = useState<SuiviObjectif | null>(null);
@@ -198,6 +204,11 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
   function activerSaisie() {
     if (clavierSysteme) return;
     setClavierOuvert(true);
+    // Le champ et le bouton « Vérifier » doivent être visibles sans que l'élève
+    // ait à chercher : on les amène dans la zone visible au prochain rendu.
+    requestAnimationFrame(() => {
+      composeurRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    });
   }
 
   function basculerSysteme() {
@@ -236,15 +247,64 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
   const tutorat: Tutorat | null = verdict?.tutorat ?? null;
   const apercu = apercuLisible(saisie.valeur);
 
+  /*
+   * `exercice--saisie` passe la page en colonne fixe : la zone du haut défile,
+   * le composeur et le clavier restent en bas. Sans cela, le clavier — qui
+   * mesure 453 px sur un écran de 640 — evictait l'énoncé hors de l'écran.
+   */
+  const enSaisie = clavierOuvert || clavierSystemeVisible.hauteur > 0;
+
   return (
-    <article className="carte exercice">
-      <p className="exercice__enonce">{exercice.enonce}</p>
-      <p className="exercice__consigne">{exercice.consigne}</p>
+    <article
+      className={`carte exercice${enSaisie ? ' exercice--saisie' : ''}`}
+      data-clavier-systeme={clavierSystemeVisible.hauteur}
+    >
+      {/* --- Zone défilante : ce qui se lit, pas ce qui se saisit --------- */}
+      <div className="exercice__zone">
+        <p className="exercice__enonce">{exercice.enonce}</p>
+        <p className="exercice__consigne">{exercice.consigne}</p>
 
-      {exercice.formeDemandee !== null && (
-        <p className="exercice__forme">Réponse attendue : {exercice.formeDemandee}.</p>
-      )}
+        {exercice.formeDemandee !== null && (
+          <p className="exercice__forme">Réponse attendue : {exercice.formeDemandee}.</p>
+        )}
 
+        {indices.length > 0 && (
+          <section className="indices" aria-label="Indices">
+            {indices.map((texte, position) => (
+              <p className="indice" key={position}>
+                <strong>Indice {position + 1}.</strong> {texte}
+              </p>
+            ))}
+          </section>
+        )}
+
+        {/* Suivi local (chantier 7.5). Information de fin d'écran : elle vit
+            dans la zone défilante, pas dans le composeur, pour ne pas réduire
+            la place du champ pendant la saisie. */}
+        {tentatives > 0 && (
+          <section className="suivi" aria-label="Mon suivi">
+            <p className="suivi__titre">
+              {tentatives} tentative{tentatives > 1 ? 's' : ''} enregistrée
+              {tentatives > 1 ? 's' : ''} sur cet appareil.
+            </p>
+            {suivi !== null && <p className="suivi__niveau">{LIBELLE_SUIVI[suivi.niveau]}</p>}
+            <button
+              className="bouton bouton--discret"
+              type="button"
+              onClick={() => {
+                effacerJournal();
+                setTentatives(0);
+                setSuivi(null);
+              }}
+            >
+              Effacer mon historique
+            </button>
+          </section>
+        )}
+      </div>
+
+      {/* --- Composeur : ce qui reste visible pendant la saisie ----------- */}
+      <div className="exercice__composeur" ref={composeurRef}>
       <label className="exercice__champ" htmlFor="reponse">
         <span className="exercice__label">Ta réponse</span>
         <input
@@ -313,28 +373,6 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
         </button>
       )}
 
-      {clavierOuvert && !clavierSysteme && (
-        <ClavierMath
-          typeReponse={exercice.typeReponse as TypeReponse}
-          onChange={setSaisie}
-          onValider={() => void envoyer()}
-          onFermer={() => setClavierOuvert(false)}
-          onSysteme={basculerSysteme}
-          champId="reponse"
-          champRef={champRef}
-        />
-      )}
-
-      {indices.length > 0 && (
-        <section className="indices" aria-label="Indices">
-          {indices.map((texte, position) => (
-            <p className="indice" key={position}>
-              <strong>Indice {position + 1}.</strong> {texte}
-            </p>
-          ))}
-        </section>
-      )}
-
       {verdict !== null && estErreurSaisie(verdict) && (
         <p className="verdict verdict--alerte" role="status">
           {verdict.message}
@@ -384,46 +422,41 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
 
           {correction.verdict === 'resultat_juste_consigne_non_respectee' && (
             <p className="verdict__detail">
-              Le calcul est bon : c’est la façon d’écrire la réponse qui est à corriger.
+              Ton calcul est bon : il reste seulement à l’écrire comme la consigne le demande.
             </p>
           )}
           {correction.achevement === 'inacheve' && (
             <p className="verdict__detail">
-              Tu es sur la bonne voie : il reste une étape pour terminer.
+              Tu as bien commencé ! Il reste une étape.
             </p>
           )}
           {correction.lectureArbitree === false && (
             // Point non arbitré : on ne présente jamais ce cas comme une
             // conclusion ferme.
             <p className="verdict__detail verdict__detail--discret">
-              Ce point sera confirmé par ton enseignant.
+              Ton enseignant vérifiera ce point.
             </p>
           )}
         </section>
       )}
 
-      {/* --- Suivi local (chantier 7.5) ------------------------------------- */}
-      {tentatives > 0 && (
-        <section className="suivi" aria-label="Mon suivi">
-          <p className="suivi__titre">
-            {tentatives} tentative{tentatives > 1 ? 's' : ''} enregistrée
-            {tentatives > 1 ? 's' : ''} sur cet appareil.
-          </p>
-          {suivi !== null && (
-            <p className="suivi__niveau">{LIBELLE_SUIVI[suivi.niveau]}</p>
-          )}
-          <button
-            className="bouton bouton--discret"
-            type="button"
-            onClick={() => {
-              effacerJournal();
-              setTentatives(0);
-              setSuivi(null);
-            }}
-          >
-            Effacer mon historique
-          </button>
-        </section>
+      </div>
+
+      {/*
+       * Le clavier est le dernier élément de la colonne : il occupe de la
+       * place, il ne recouvre rien. C'est l'inverse d'un positionnement
+       * absolu, qui aurait masqué le composeur.
+       */}
+      {clavierOuvert && !clavierSysteme && (
+        <ClavierMath
+          typeReponse={exercice.typeReponse as TypeReponse}
+          onChange={setSaisie}
+          onValider={() => void envoyer()}
+          onFermer={() => setClavierOuvert(false)}
+          onSysteme={basculerSysteme}
+          champId="reponse"
+          champRef={champRef}
+        />
       )}
     </article>
   );

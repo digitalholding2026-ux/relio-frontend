@@ -736,3 +736,116 @@ body {
   border: 1px solid var(--bordure);
   background: transparent;
 }
+
+/* ===========================================================================
+   Chantier 7.7 — partie A : le clavier ne recouvre plus le contenu
+   ===========================================================================
+
+   **Cause mesurée.** Le clavier d'expression compte 9 rangées de 44 px, soit
+   453 px avec les espacements. Sur un écran de 360 × 640 — la largeur de
+   référence du produit — cela représente 71 % de la hauteur. Il ne restait que
+   187 px pour l'en-tête, l'énoncé, la consigne, le champ et le bouton
+   « Vérifier » : l'énoncé était nécessairement hors de l'écran.
+
+   **Pourquoi `position: sticky` n'y change rien.** Une position `sticky` garde
+   l'élément dans le flux, mais la colonne qui le contient continuait de
+   grandir avec le contenu : rien ne réserve de place au clavier, donc rien ne
+   rétrécit. Sur un écran court, le clavier mangeait la page.
+
+   **La correction.** En mode saisie, l'article devient une colonne de hauteur
+   contrainte à trois zones :
+
+       ┌─────────────────────────────┐
+       │ zone défilante (énoncé…)    │  flex: 1, défile
+       ├─────────────────────────────┤
+       │ composeur (retour, champ,   │  hauteur propre
+       │           bouton Vérifier)  │
+       ├─────────────────────────────┤
+       │ clavier                     │  hauteur propre
+       └─────────────────────────────┘
+
+   Le clavier **prend de la place**, il ne recouvre rien. C'est l'inverse d'un
+   positionnement absolu ou collé, qui aurait laissé le contenu inchangé.
+
+   La hauteur disponible est calculée à partir de `100dvh`, **moins la hauteur
+   du clavier système** mesurée par `useHauteurClavierSysteme` et publiée dans
+   `--relio-clavier-systeme`. Sans cette mesure, une page en `100dvh` continue
+   de croire que l'écran fait 640 px alors que 400 restent visibles — et le
+   clavier se retrouve derrière celui du téléphone.
+   =========================================================================== */
+
+.exercice--saisie {
+  /* La carte ne doit plus être une boîte qui grandit : elle devient une
+     colonne contrainte, sinon `flex: 1` n'aurait aucun effet. */
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - var(--relio-clavier-systeme, 0px));
+  max-height: calc(100dvh - var(--relio-clavier-systeme, 0px));
+  padding: 0;
+  overflow: hidden;
+}
+
+.exercice--saisie .exercice__zone {
+  flex: 1 1 auto;
+  min-height: 0; /* indispensable : sans cela, `flex: 1` est ignoré */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.exercice--saisie .exercice__composeur {
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--bordure);
+  background: var(--surface);
+}
+
+.exercice--saisie .exercice__champ {
+  margin-top: 0;
+}
+
+/* En mode saisie, les marges du composeur sont comptées : chaque pixel
+   compte quand il ne reste que 187 px. */
+.exercice__composeur .verdict {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Le composeur et le clavier doivent rester atteignables au doigt : on laisse
+   le défilement naturel agir plutôt que de fixer quoi que ce soit. */
+.exercice--saisie .clavier {
+  position: static;
+  flex: 0 0 auto;
+  margin-top: 0;
+  box-shadow: none;
+  border-top: 1px solid var(--bordure);
+}
+
+/* Sur les écrans bas, on resserre les espacements internes du clavier sans
+   jamais descendre sous 44 px : la cible tactile est non négociable. */
+@media (max-height: 700px) {
+  .clavier {
+    padding: 0.25rem;
+  }
+
+  .clavier__rangee {
+    gap: 4px;
+  }
+
+  .clavier__rangee + .clavier__rangee {
+    margin-top: 4px;
+  }
+
+  .clavier__touche {
+    padding: 0.25rem 0.15rem;
+  }
+}
+
+/* L'énoncé et la consigne ne doivent pas être mangés par le composeur quand la
+   zone défilante est réduite : ils gardent leur respiration habituelle. */
+.exercice__zone {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}

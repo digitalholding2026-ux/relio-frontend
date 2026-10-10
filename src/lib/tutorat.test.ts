@@ -71,8 +71,8 @@ describe('7.5 — aucune maîtrise affirmée', () => {
 
   it('présente une réussite après aide comme « à confirmer »', () => {
     // La nuance du chantier : une réussite après aide n'est pas une maîtrise.
-    assert.match(LIBELLE_SUIVI.a_confirmer, /avec des aides/i);
-    assert.match(LIBELLE_SUIVI.a_confirmer, /re[tv]ravailler/i);
+    assert.match(LIBELLE_SUIVI.a_confirmer, /avec de l’aide/i);
+    assert.match(LIBELLE_SUIVI.a_confirmer, /essaie seul/i);
   });
 
   it('ne produit aucun état nommé « maîtrisé »', () => {
@@ -99,7 +99,7 @@ describe('7.5 — aucune clé technique affichée à l’élève', () => {
 
   it('retombe sur un texte prudent pour une catégorie inconnue', () => {
     // Une catégorie venue d'une API plus récente ne doit pas fuir en clair.
-    assert.equal(libelleCategorie('truc_inconnu'), 'difficulté non identifiée');
+    assert.equal(libelleCategorie('truc_inconnu'), 'difficulté que je n’ai pas su nommer');
   });
 
   it('ne rend rien sur une absence de catégorie', () => {
@@ -127,7 +127,7 @@ describe('7.5 — aucune clé technique affichée à l’élève', () => {
       difficultesRecurrentes: [{ categorie: 'erreur_de_signe', occurrences: 2 }],
     };
 
-    assert.equal(LIBELLE_SUIVI[suivi.niveau], 'Difficulté constatée sur plusieurs tentatives.');
+    assert.equal(LIBELLE_SUIVI[suivi.niveau], 'C’est difficile pour toi en ce moment. Demande un indice.');
     assert.equal(libelleCategorie(suivi.difficultesRecurrentes[0]?.categorie), 'signe');
   });
 });
