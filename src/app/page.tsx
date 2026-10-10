@@ -38,6 +38,11 @@ function normaliserUrl(valeur: string | undefined): string {
   return brute.replace(/\/+$/, '');
 }
 
+// La page d'accueil lit `API_BASE_URL` pour l'état de connexion au service.
+// Elle doit donc être rendue à chaque requête : prérendue au build, elle
+// afficherait un état figé. Même raison que sur `/parcours`.
+export const dynamic = 'force-dynamic';
+
 /**
  * Page d'accueil — composant serveur.
  *

@@ -8,11 +8,25 @@ function normaliserUrl(valeur: string | undefined): string {
   return brute.replace(/\/+$/, '');
 }
 
+// `API_BASE_URL` doit être lue **à la requête**, pas au build.
+//
+// Sans cette directive, Next.js classe la page comme statique et la
+// prerend au build : `process.env.API_BASE_URL` vaut alors `undefined`, la
+// page affiche « Le service d'exercices n'est pas configuré sur ce
+// déploiement », et elle est servie telle quelle jusqu'au prochain build.
+// Un élève voyait donc un parcours vide alors que le backend répondait très
+// bien — et changer la variable d'environnement sur Vercel n'y changeait
+// rien. C'est le défaut de navigation du chantier 7.1.
+export const dynamic = 'force-dynamic';
+
 /**
  * Page du parcours — composant **serveur**.
  *
  * `API_BASE_URL` est lue ici, côté serveur, puis transmise par prop. Aucun
- * secret ne part dans le bundle, et le build n'effectue aucun appel réseau.
+ * secret ne part dans le bundle, et le build n'effectue aucun appel réseau :
+ * la seule conséquence de la directive ci-dessus est que la page est rendue
+ * à chaque requête, ce qui est nécessaire pour que la configuration de
+ * production s'applique.
  */
 export default async function PageParcours() {
   const apiBaseUrl = normaliserUrl(process.env.API_BASE_URL);
