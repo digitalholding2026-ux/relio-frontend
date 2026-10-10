@@ -32,13 +32,32 @@ function estErreurSaisie(verdict: Verdict): verdict is ErreurSaisie {
   return 'erreurSaisie' in verdict;
 }
 
-/** Libellés des statuts, dans les mots de l'élève. */
-const LIBELLE_STATUT: Record<Correction['statut'], string> = {
-  correcte: 'Ta réponse est juste.',
-  partielle: 'Ta réponse est juste, mais pas dans la forme demandée.',
-  fausse: 'Ce n’est pas encore juste.',
-  indeterminee: 'Ta réponse est juste ; la forme demandée reste à vérifier.',
+/**
+ * Libellés de repli, par verdict.
+ *
+ * **Ils ne devraient jamais être utilisés** : le serveur fournit déjà
+ * `libelle`, calculé par la même règle que le verdict. Ces valeurs ne servent
+ * que si l'API répond une version antérieure, sans le champ — auquel cas
+ * afficher quelque chose de lisible vaut mieux qu'afficher `undefined`.
+ */
+const LIBELLE_REPLI: Record<Correction['verdict'], string> = {
+  correct: 'Ta réponse est juste.',
+  partiellement_correct: 'Ta réponse est partiellement correcte.',
+  resultat_juste_consigne_non_respectee:
+    'Ton résultat est juste, mais pas dans la forme demandée.',
+  incorrect: 'Ce n’est pas encore juste.',
+  a_determiner: 'Ta réponse est juste ; la forme demandée reste à vérifier.',
 };
+
+/**
+ * Le libellé affiché vient du serveur. Il n'est amputé d'aucun mot : c'est le
+ * retour pédagogique validé par l'enseignant, et le reformuler ici risquerait
+ * d'en diluer la portée.
+ */
+function libelleAffiche(correction: Correction): string {
+  const fourni = correction.libelle?.trim();
+  return fourni && fourni.length > 0 ? fourni : LIBELLE_REPLI[correction.verdict];
+}
 
 export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId: string }) {
   const [exercice, setExercice] = useState<ExercicePublic | null>(null);
@@ -181,15 +200,23 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
 
       {correction !== null && (
         <section
-          className={`verdict verdict--${correction.statut}`}
+          // La classe suit le **verdict** (décision D5) et non le statut
+          // technique : « partiellement correct » et « résultat juste,
+          // consigne non respectée » doivent se distinguer visuellement.
+          className={`verdict verdict--${correction.verdict}`}
           role="status"
           aria-live="polite"
         >
-          <p className="verdict__statut">{LIBELLE_STATUT[correction.statut]}</p>
+          <p className="verdict__statut">{libelleAffiche(correction)}</p>
           <p className="verdict__detail">{correction.explication}</p>
-          {correction.formeRespectee === false && (
+          {correction.verdict === 'resultat_juste_consigne_non_respectee' && (
             <p className="verdict__detail">
               Le calcul est bon : c’est la façon d’écrire la réponse qui est à corriger.
+            </p>
+          )}
+          {correction.achevement === 'inacheve' && (
+            <p className="verdict__detail">
+              Tu es sur la bonne voie : il reste une étape pour terminer.
             </p>
           )}
           {correction.lectureArbitree === false && (

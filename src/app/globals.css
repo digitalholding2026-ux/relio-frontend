@@ -519,28 +519,50 @@ body {
   font-style: italic;
 }
 
-.verdict--correcte {
+/* ---------------------------------------------------------------------------
+   Couleurs des verdicts — décision D5.
+
+   Le ton est choisi selon ce que l'élève doit comprendre de sa réponse :
+
+   - `correct` : le travail est terminé → vert ;
+   - `partiellement_correct` : l'élève est sur la bonne voie, reste une étape
+     → ambre, comme `a_determiner` ;
+   - `resultat_juste_consigne_non_respectee` : le résultat est juste, seule
+     l'écriture est à corriger → ambre également, mais **jamais rouge** : le
+     signal « faux » serait un contresens pédagogique ;
+   - `incorrect` : la réponse est à reprendre → rouge.
+
+   ⚠️ `partiellement_correct` et `resultat_juste_consigne_non_respectee`
+   partagent volontairement la même couleur : tous deux signifient « tu n'as
+   pas tout à fait, mais tu n'as pas faux ». Ce qui les distingue est le
+   libellé, pas la couleur.
+   --------------------------------------------------------------------------- */
+
+.verdict--correct {
   background: var(--succes-fond);
   border-color: #bfe3cd;
   color: var(--succes-texte);
 }
 
-.verdict--partielle {
+.verdict--partiellement_correct,
+.verdict--resultat_juste_consigne_non_respectee,
+.verdict--a_determiner {
   background: var(--attente-fond);
   border-color: #f0dcb8;
   color: var(--attente-texte);
 }
 
-.verdict--fausse,
-.verdict--indeterminee,
+.verdict--incorrect,
 .verdict--alerte {
   background: var(--alerte-fond);
   border-color: #f0c8c8;
   color: var(--alerte-texte);
 }
 
-.verdict--fausse .verdict__detail,
-.verdict--indeterminee .verdict__detail,
+.verdict--partiellement_correct .verdict__detail,
+.verdict--resultat_juste_consigne_non_respectee .verdict__detail,
+.verdict--a_determiner .verdict__detail,
+.verdict--incorrect .verdict__detail,
 .verdict--alerte {
   color: inherit;
 }

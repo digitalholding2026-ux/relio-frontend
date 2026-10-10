@@ -57,12 +57,31 @@ export interface Parcours {
   blocs: BlocPublic[];
 }
 
+/**
+ * Verdict pédagogique — décision D5, validée par l'enseignant.
+ *
+ * Les libellés **viennent du serveur** (`libelle`) : le frontend ne les
+ * reconstruit pas. Une correspondance locale risquerait de diverger de la règle
+ * appliquée, et le message vu par l'élève ne serait plus testable.
+ */
+export type Verdict =
+  | 'correct'
+  | 'partiellement_correct'
+  | 'resultat_juste_consigne_non_respectee'
+  | 'incorrect'
+  | 'a_determiner';
+
 export interface Correction {
   exerciceId: string;
   objectifId: string;
   mathemathiquementJuste: boolean;
   formeRespectee: boolean | null;
+  /** Achèvement : `acheve`, `inacheve`, ou `null` si le moteur ne le sait pas. */
+  achevement: 'acheve' | 'inacheve' | null;
   statut: 'correcte' | 'partielle' | 'fausse' | 'indeterminee';
+  verdict: Verdict;
+  /** Libellé exact à afficher, fourni par le serveur. */
+  libelle: string;
   signatureErreur: string;
   leconsCandidates: string[];
   explication: string;
