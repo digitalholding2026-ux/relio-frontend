@@ -88,12 +88,28 @@ export interface Correction {
   indice: number | null;
   lectureArbitree: boolean;
   pointsArbitrage: string[];
+  /**
+   * Chantier 7.5 — échelle d'aide progressive.
+   *
+   * Facultative : une API antérieure ne la renvoie pas, et l'écran doit rester
+   * utilisable en retomposant sur `explication`.
+   */
+  tutorat?: import('./tutorat').Tutorat;
+  /**
+   * Catégorie de difficulté constatée, ou `null` si aucune erreur.
+   *
+   * `erreur_non_identifiee` signifie « erreur constatée mais non qualifiée » :
+   * ce n'est pas la même chose que `null`.
+   */
+  categorieDifficulte?: string | null;
 }
 
 export interface ErreurSaisie {
   erreurSaisie: true;
   message: string;
   exerciceId: string;
+  categorieDifficulte?: string | null;
+  tutorat?: import('./tutorat').Tutorat;
 }
 
 export const DELAI_MS = 8000;
@@ -168,19 +184,49 @@ export async function demanderIndice(
 /**
  * Envoie une réponse et récupère le verdict.
  *
- * Le corps ne contient que l'identifiant de l'exercice et la saisie : aucun
- * nom, aucun identifiant d'élève, aucune donnée personnelle.
+ * Le corps contient l'identifiant de l'exercice, la saisie et le **nombre
+ * d'échecs déjà essuyés** sur cet exercice. Aucun nom, aucun identifiant
+ * d'élève, aucune donnée personnelle : le nombre d'échecs ne sert qu'à choisir
+ * le niveau d'aide.
+ *
+ * @param nbEchecs nombre d'échecs consécutifs déjà observés sur cet exercice
  */
 export async function corrigerReponse(
   baseUrl: string,
   exerciceId: string,
   reponse: string,
   indiceDemande: number | null,
+  nbEchecs = 0,
 ): Promise<Correction | ErreurSaisie> {
   const corps = await appeler<Correction | ErreurSaisie>(baseUrl, '/api/v1/corrections', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ exerciceId, reponse, indiceDemande }),
+    body: JSON.stringify({ exerciceId, reponse, indiceDemande, nbEchecs }),
   });
   return corps;
+}
+
+/**
+ * Calcule le suivi des difficultés à partir des observations locales.
+ *
+ * Le serveur ne conserve rien : il agrège ce que l'élève lui renvoie. C'est le
+ * prolongement exact de `/api/v1/progression`.
+ */
+export async function chargerSuivi(
+  baseUrl: string,
+  observations: readonly import('./observations').Observation[],
+): Promise<{ objectifs: import('./tutorat').SuiviObjectif[]; avertissement: string } | null> {
+  try {
+    return await appeler<{ objectifs: import('./tutorat').SuiviObjectif[]; avertissement: string }>(
+      baseUrl,
+      '/api/v1/suivi',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ observations }),
+      },
+    );
+  } catch {
+    return null;
+  }
 }

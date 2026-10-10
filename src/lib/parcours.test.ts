@@ -210,13 +210,32 @@ describe('corrigerReponse', () => {
     assert.equal(verdict.lectureArbitree, false);
   });
 
-  it('n’envoie que l’identifiant, la réponse et le nombre d’indices', async () => {
+  it('n’envoie que des champs pédagogiques, aucune donnée personnelle', async () => {
+    // Chantier 7.5 : `nbEchecs` s'ajoute au corps. Il ne sert qu'à choisir le
+    // niveau d'aide — ce n'est pas une donnée personnelle, et il ne doit pas
+    // être accompagné d'un nom, d'un identifiant d'élève ou d'une date de
+    // naissance.
     const appels = stubFetch(() => Promise.resolve(json(VERDICT)));
 
-    await corrigerReponse(BASE, 'MVP-B1-E4', '4x^2 - 9', 2);
+    await corrigerReponse(BASE, 'MVP-B1-E4', '4x^2 - 9', 2, 3);
 
     const corps = JSON.parse(String(appels[0]?.init.body)) as Record<string, unknown>;
-    assert.deepEqual(Object.keys(corps).sort(), ['exerciceId', 'indiceDemande', 'reponse']);
+    assert.deepEqual(Object.keys(corps).sort(), [
+      'exerciceId',
+      'indiceDemande',
+      'nbEchecs',
+      'reponse',
+    ]);
+    assert.equal(corps.nbEchecs, 3);
+  });
+
+  it('transmet zéro échec par défaut, sans champ superflu', async () => {
+    const appels = stubFetch(() => Promise.resolve(json(VERDICT)));
+
+    await corrigerReponse(BASE, 'MVP-B1-E1', '2x + 1', null);
+
+    const corps = JSON.parse(String(appels[0]?.init.body)) as Record<string, unknown>;
+    assert.equal(corps.nbEchecs, 0);
   });
 
   it('remonte l’erreur de saisie renvoyée par le serveur', async () => {

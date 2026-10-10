@@ -566,3 +566,166 @@ body {
 .verdict--alerte {
   color: inherit;
 }
+
+/* ===========================================================================
+   Chantier 7.5 — clavier mathématique, tutorat et suivi local
+   ===========================================================================
+
+   Ergonomie de référence : écran Android étroit (360 px de large au plus).
+   Toutes les décisions ci-dessous découlent de cette contrainte unique.
+
+   - `clavier` est **collant en bas** (`position: sticky`) et non superposé :
+     il pousse le contenu au lieu de le recouvrir. Le champ de saisie et le
+     bouton « Vérifier » restent donc visibles en permanence, ce qui était une
+     exigence explicite du chantier. Une frappe au doigt n'est envisageable que
+     si la cible fait au moins 44 px de côté —riterion retenu par les
+     recommendations d'accessibilité mobile.
+   - La grille est déclarée en **4 colonnes**, ce qui laisse environ 80 px par
+     touche sur un écran de 360 px. En dessous, la saisie au doigt devient
+     imprécise.
+   - Aucune animation ni transition : elles coûtent des octets et de la
+     batterie sur des appareils d'entrée de gamme, sans apporter d'information.
+   =========================================================================== */
+
+.clavier {
+  position: sticky;
+  bottom: 0;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: var(--surface);
+  border-top: 1px solid var(--bordure);
+  box-shadow: 0 -2px 12px rgba(20, 22, 31, 0.06);
+  z-index: 10;
+}
+
+.clavier__grille {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.clavier__touche {
+  /* 44 px minimum : en dessous, la touche est difficile à viser au doigt. */
+  min-height: 44px;
+  padding: 0.4rem 0.2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--texte);
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.clavier__touche:active {
+  background: var(--primaire-doux);
+  border-color: var(--primaire);
+}
+
+/* Touches de contrôle : visuellement distinctes des touches de saisie, pour
+   qu'aucune suppression ne soit confondue avec un caractère. */
+.clavier__touche--retour,
+.clavier__touche--effacer,
+.clavier__touche--gauche,
+.clavier__touche--droite {
+  background: var(--fond);
+  color: var(--texte-doux);
+}
+
+.clavier__touche--valider {
+  background: var(--primaire);
+  border-color: var(--primaire);
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.clavier__touche--valider:active {
+  background: var(--primaire-sombre);
+}
+
+.clavier__touche--fermer,
+.clavier__touche--systeme {
+  background: transparent;
+  color: var(--texte-doux);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Cible le retour au focus du champ après une frappe de touche. */
+.clavier__touche:focus-visible {
+  outline: 3px solid var(--primaire);
+  outline-offset: 1px;
+}
+
+/* Aperçu lisible de la saisie, juste sous le champ. */
+.exercice__apercu {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--texte-doux);
+  font-style: italic;
+}
+
+/* --- Tutorat pas à pas ---------------------------------------------------- */
+
+.tutorat {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed currentColor;
+  opacity: 0.95;
+}
+
+.tutorat__niveau {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tutorat__message {
+  margin: 0 0 0.4rem;
+}
+
+.tutorat__action {
+  margin: 0.3rem 0 0;
+  font-weight: 600;
+}
+
+.tutorat__resume {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.6rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+/* --- Suivi local ---------------------------------------------------------- */
+
+.suivi {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--bordure);
+  font-size: 0.9rem;
+  color: var(--texte-doux);
+}
+
+.suivi__titre {
+  margin: 0 0 0.2rem;
+}
+
+.suivi__niveau {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.bouton--discret {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--texte-doux);
+  border: 1px solid var(--bordure);
+  background: transparent;
+}
