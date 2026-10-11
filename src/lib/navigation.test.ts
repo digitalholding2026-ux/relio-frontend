@@ -94,23 +94,23 @@ function routesConnues(): Set<string> {
   return routes;
 }
 
-describe('navigation — bouton « Voir le parcours »', () => {
-  it('la page d’accueil contient un lien vers le parcours', () => {
-    const accueil = lirePage('app/page.tsx');
+describe('navigation — accès au parcours depuis l’accueil', () => {
+  it('la page d’accueil contient un lien qui mène à un exercice du parcours', () => {
+    const accueil = lirePage('app/page.tsx') + lirePage('app/CarteRoute.tsx');
 
-    assert.match(
-      accueil,
-      /Voir le parcours/,
-      "Le bouton « Voir le parcours » a disparu de la page d’accueil. " +
-        'C’est exactement le défaut du chantier 7.1 : sans ce lien, l’élève n’a aucun accès au parcours.',
-    );
-
-    // Le lien doit viser la route du parcours, pas la page d’accueil elle-même
-    // (le symptôme observé : rester ou revenir sur une page d’état).
-    const liensVersParcours = [...accueil.matchAll(/href=["'](\/parcours[^"']*)["']/g)];
+    // Chantier B : le bouton s'appelle désormais « Continuer » et il est rendu
+    // par `CarteRoute.tsx`. Ce qui doit rester vrai, c'est l'intention d'origine
+    // de ce test — l'accueil donne accès au parcours — pas le libellé.
+    //
+    // Le contrôle tient : le lien doit viser la route du parcours, pas la page
+    // d'accueil elle-même (le symptôme observé au chantier 7.1 : rester ou
+    // revenir sur une page d'état).
+    // Le lien peut être une chaîne littérale (`href="/parcours/x"`) ou un
+    // gabarit (`href={`/parcours/${id}`}`) : les deux doivent être acceptés.
+    const liensVersParcours = [...accueil.matchAll(/href\s*=\s*\{?\s*["'`]\/parcours/g)];
     assert.ok(
       liensVersParcours.length > 0,
-      'Aucun lien `href="/parcours"` sur la page d’accueil.',
+      'Aucun lien vers le parcours sur la page d’accueil.',
     );
   });
 
@@ -196,20 +196,36 @@ describe('navigation — bouton « Voir le parcours »', () => {
     );
   });
 
-  it('la page d’état des fonctionnalités reste accessible et séparée', () => {
-    // La page d'état technique est utile au propriétaire : elle ne doit pas
-    // disparaître, mais elle ne doit pas non plus remplacer le parcours.
-    const accueil = lirePage('app/page.tsx');
+  it('la page d’état des fonctionnalités n’est plus sur l’accueil', () => {
+    // Ce test verrouillait l'inverse : tant que l'accueil était un dépliant
+    // technique, la section « État des fonctionnalités » devait exister mais
+    // rester après le parcours, pour ne pas donner l'impression que l'état
+    // technique est la destination de l'élève.
+    //
+    // Chantier B : cette section est **supprimée**, pas déplacée. Elle listait
+    // des fonctionnalités en dur, sans rapport avec l'état réel du service, et
+    // n'avait pas sa place sur l'écran d'un élève. La raison de ce test —
+    // « la destination principale est le parcours, pas l'état technique » —
+    // est désormais satisfaite plus fortement : il n'y a plus d'état technique
+    // du tout sur cet écran.
+    const accueil = lirePage('app/page.tsx') + lirePage('app/CarteRoute.tsx');
 
-    const indexEtat = accueil.indexOf('État des fonctionnalités');
-    const indexParcours = accueil.indexOf('Le parcours');
+    assert.equal(
+      accueil.indexOf('État des fonctionnalités'),
+      -1,
+      'La section d’état des fonctionnalités est revenue sur l’accueil.',
+    );
 
-    assert.ok(indexEtat !== -1, 'La section d’état des fonctionnalités a été supprimée.');
-    assert.ok(indexParcours !== -1, 'La section du parcours a été supprimée.');
-    assert.ok(
-      indexParcours < indexEtat,
-      'L’état des fonctionnalités doit venir après le parcours : la page d’état ne doit pas ' +
-        'donner l’impression d’être la destination principale.',
+    // La destination principale est la carte de la semaine, pas une liste.
+    assert.match(
+      accueil,
+      /Ta route cette semaine/,
+      'La carte principale de l’accueil a disparu.',
+    );
+    assert.doesNotMatch(
+      accueil,
+      /Disponible<\/|Bientôt</,
+      'Les états « Disponible » / « Bientôt » du parcours marketing sont revenus.',
     );
   });
 

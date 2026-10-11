@@ -1,97 +1,74 @@
-'use client';
+import { verifierApi } from '@/lib/api';
 
-import { useCallback, useEffect, useState } from 'react';
-import { verifierApi, type ApiState } from '@/lib/api';
+import { Bouton } from '@/components/ds/Bouton';
+import { Pastille } from '@/components/ds/Pastille';
+import styles from './ApiStatus.module.css';
 
 /**
- * Affiche l'état réel de la connexion à l'API backend.
+ * État du service — une pastille discrète, en bas de page.
  *
- * Point de conception important : cet appel est déclenché **côté client**,
- * après le rendu. Le build Vercel n'effectue donc aucun appel réseau et
- * n'échoue jamais si l'API est indisponible.
+ * ## Ce que ce composant ne fait plus
  *
- * Le composant ne montre jamais « connecté » sans réponse réelle du serveur.
+ * Il n'affiche **plus l'adresse du backend**. L'ancien composant montrait
+ * `baseUrl` sous le nom du service : une URL de déploiement n'a aucune
+ * utilité pour un élève et n'a pas sa place sur son écran. Elle reste une
+ * information d'exploitation, lisible dans les journaux du serveur.
+ *
+ * Il ne montre plus non plus une carte à cinq états. L'élève n'a pas à
+ * distinguer « contrat désynchronisé » de « service indisponible » : ce sont
+ * deux formulations du même fait pour lui, et une seule question compte —
+ * « puis-je travailler ? ». La distinction reste visible côté serveur, dans les
+ * journaux et dans `lib/api.test.ts`.
+ *
+ * ## Pourquoi ce n'est plus un composant client
+ *
+ * Il l'était, et la raison était alors valable : sans elle, un build Vercel
+ * aurait fait un appel réseau et échoué si l'API était indisponible au moment
+ * de la compilation. La situation a changé — cette page interroge déjà l'API
+ * **côté serveur** pour construire la carte principale, donc l'appel est déjà
+ * fait, et `force-dynamic` garantit qu'il a lieu à chaque requête plutôt qu'au
+ * build.
+ *
+ * Refaire la même vérification depuis le navigateur coûtait une seconde
+ * requête et **3,7 Ko de JavaScript** : le design system entier entrait dans le
+ * bundle de l'accueil par ce chemin, alors que rien n'y interagissait. Le
+ * composant est donc rendu côté serveur, et le bouton « Réessayer » est un
+ * formulaire `GET` vers la page — il fonctionne même si aucun script n'a
+ * chargé.
+ *
+ * ## Aucune invention
+ *
+ * Comme `lib/api.ts`, ce composant ne fabrique jamais une réponse favorable :
+ * sans réponse réelle du serveur, il affiche l'indisponibilité, jamais
+ * « disponible ».
  */
-export function ApiStatus({ baseUrl }: { baseUrl: string }) {
-  const [etat, setEtat] = useState<ApiState>({ kind: 'verification' });
+export async function ApiStatus({ baseUrl }: { baseUrl: string }) {
+  if (baseUrl === '') {
+    return (
+      <p className={styles.ligne}>
+        <Pastille ton="neutre" compacte>
+          Service non configuré
+        </Pastille>
+      </p>
+    );
+  }
 
-  const verifier = useCallback(async () => {
-    setEtat({ kind: 'verification' });
-    setEtat(await verifierApi(baseUrl));
-  }, [baseUrl]);
-
-  useEffect(() => {
-    void verifier();
-  }, [verifier]);
-
-  const carte = (() => {
-    switch (etat.kind) {
-      case 'verification':
-        return {
-          classe: 'etat-api etat-api--attente',
-          badge: { texte: 'Vérification', classe: 'badge--attente' },
-          titre: 'Connexion à l’API en cours…',
-          detail: 'Interrogation du service backend.',
-        };
-
-      case 'non-configure':
-        return {
-          classe: 'etat-api etat-api--attente',
-          badge: { texte: 'Non configuré', classe: 'badge--attente' },
-          titre: 'API non configurée',
-          detail: etat.raison,
-        };
-
-      case 'joignable':
-        return {
-          classe: 'etat-api etat-api--succes',
-          badge: { texte: 'Joignable', classe: 'badge--succes' },
-          titre: `API Relio ${etat.version} — statut « ${etat.statut} »`,
-          detail:
-            etat.statut === 'socle'
-              ? 'Le backend répond. Cela ne signifie pas qu’une fonctionnalité pédagogique est disponible.'
-              : 'Le backend répond.',
-        };
-
-      case 'desaccord':
-        return {
-          classe: 'etat-api etat-api--alerte',
-          badge: { texte: 'Désynchronisé', classe: 'badge--alerte' },
-          titre: 'Contrat désynchronisé',
-          detail: etat.raison,
-        };
-
-      case 'indisponible':
-      default:
-        return {
-          classe: 'etat-api etat-api--alerte',
-          badge: { texte: 'Indisponible', classe: 'badge--alerte' },
-          titre: 'API indisponible',
-          detail: etat.raison,
-        };
-    }
-  })();
+  const etat = await verifierApi(baseUrl);
+  const disponible = etat.kind === 'joignable';
 
   return (
-    <div className={carte.classe}>
-      <div className="carte">
-        <div className="etat-api__ligne">
-          <p className="etat-api__titre">{carte.titre}</p>
-          <span className={`badge ${carte.badge.classe}`}>{carte.badge.texte}</span>
-        </div>
-        <p className="etat-api__detail">{carte.detail}</p>
-        {baseUrl ? <p className="etat-api__url">{baseUrl}</p> : null}
-        <div className="actions">
-          <button
-            type="button"
-            className="bouton bouton--secondaire"
-            onClick={() => void verifier()}
-            disabled={etat.kind === 'verification'}
-          >
-            {etat.kind === 'verification' ? 'Vérification…' : 'Revérifier'}
-          </button>
-        </div>
-      </div>
-    </div>
+    <p className={styles.ligne}>
+      <Pastille ton={disponible ? 'succes' : 'alerte'} compacte>
+        {disponible ? 'Service disponible' : 'Service injoignable'}
+      </Pastille>
+
+      {!disponible ? (
+        <form action="/" method="get" className={styles.formulaire}>
+          <Bouton type="submit" variante="ghost" taille="sm">
+            Réessayer
+          </Bouton>
+        </form>
+      ) : null}
+    </p>
   );
 }

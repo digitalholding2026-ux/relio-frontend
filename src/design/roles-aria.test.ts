@@ -107,17 +107,31 @@ describe('Rôles ARIA — contrôle statique', () => {
     expect(fautifs.map((r) => `${r.fichier}:${r.ligne} → ${r.role}`)).toEqual([]);
   });
 
-  it('les trois bandeaux d’avertissement portent un rôleannonçant', () => {
-    const announcing = rolesUtilises().filter(
-      (r) => r.role === 'status' || r.role === 'alert',
-    );
+  it('chaque écran qui a encore un message à annoncer porte un rôle annonçant', () => {
+    // Chantier B : l'accueil n'a plus de bandeau d'avertissement — son contenu
+    // vient de l'API et ne peut donc pas annoncer un périmètre périmé. Les deux
+    // écrans qui affichent encore un message de contexte doivent porter
+    // `status` ou `alert`.
+    const announcing = rolesUtilises().filter((r) => r.role === 'status' || r.role === 'alert');
     const fichiers = new Set(announcing.map((r) => r.fichier));
-    for (const attendu of [
-      'app/page.tsx',
-      'app/parcours/page.tsx',
-      'components/ParcoursServeur.tsx',
-    ]) {
+    for (const attendu of ['app/parcours/page.tsx', 'components/ParcoursServeur.tsx']) {
       expect(fichiers.has(attendu), `${attendu} ne porte aucun rôle status/alert`).toBe(true);
+    }
+  });
+
+  it('la carte principale de l’accueil est une région nommée', () => {
+    // `region` + `aria-labelledby` : c'est le repère qui permet à un lecteur
+    // d'écran d'aller directement à l'essentiel, sans lire la page en entier.
+    const carte = sources().filter((f) => f.endsWith('.tsx') && !f.includes('.test.'));
+
+    const avecCarte = carte.filter((f) => readFileSync(f, 'utf8').includes('Ta route cette semaine'));
+    expect(avecCarte.length).toBeGreaterThan(0);
+
+    for (const fichier of avecCarte) {
+      const contenu = readFileSync(fichier, 'utf8');
+      expect(contenu, `${fichier} : la carte n'est pas une région nommée`).toMatch(
+        /<section[^>]*aria-labelledby/,
+      );
     }
   });
 });

@@ -1,0 +1,212 @@
+/**
+ * Accueil — feuille locale.
+ *
+ * ## Pourquoi un module, et non `globals.css`
+ *
+ * Le chantier B est la première migration réelle sur le design system. Cette
+ * page ne déclare **aucune** classe globale : ce qui reste dans `globals.css`
+ * appartient aux écrans qui n'ont pas encore été repris (`/parcours`,
+ * `/parcours/[id]`), et non à celui-ci.
+ *
+ * Tout ce qui est décoratif ici — espacement, couleur de fond, grille des
+ * trois étapes — vient des tokens `--relio-*`. Aucune couleur brute, aucun px
+ * en dur hors de l'échelle 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
+ *
+ * ## Ce qui n'est pas dans ce fichier
+ *
+ * Le bouton « Continuer ». Son style appartient au composant `Bouton` du design
+ * system ; le réécrire ici créerait une seconde définition à maintenir et
+ * divergerait. `CarteRoute.tsx` importe directement `Bouton.module.css`.
+ *
+ * ## Le budget de hauteur
+ *
+ * À 360 × 640, l'élève doit voir sans défiler : la salutation, le
+ * sous-titre, la carte et son bouton. Les espacements du bandeau sont donc
+ * volontairement serrés — 24 px au-dessus de la carte, 32 px au-dessous.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--relio-fond);
+  color: var(--relio-texte);
+}
+
+.conteneur {
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--relio-espace-6) var(--relio-espace-4) var(--relio-espace-8);
+}
+
+/* --- Bandeau -------------------------------------------------------------- */
+
+.entete {
+  padding-top: var(--relio-espace-6);
+  margin-bottom: var(--relio-espace-6);
+}
+
+.salutation {
+  margin: 0;
+  font-size: var(--relio-taille-2xl);
+  line-height: var(--relio-interligne-titre);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.sousTitre {
+  margin: var(--relio-espace-1) 0 0;
+  font-size: var(--relio-taille-base);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Carte principale ----------------------------------------------------- */
+
+.route {
+  margin: 0;
+}
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-4);
+}
+
+.carteEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--relio-espace-3);
+  flex-wrap: wrap;
+}
+
+.carteTitre {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--relio-texte-secondaire);
+}
+
+.blocTitre {
+  margin: 0;
+  font-size: var(--relio-taille-xl);
+  line-height: var(--relio-interligne-titre);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.appel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+}
+
+.duree {
+  margin: 0;
+  text-align: center;
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+.formulaire {
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Repli de chargement ------------------------------------------------- */
+
+.squeletteTitre {
+  border-radius: var(--relio-rayon-sm);
+}
+
+.squeletteAction {
+  border-radius: var(--relio-rayon-md);
+}
+
+/* --- Comment ça marche ---------------------------------------------------- */
+
+.section {
+  margin-top: var(--relio-espace-8);
+}
+
+.titreSection {
+  margin: 0 0 var(--relio-espace-4);
+  font-size: var(--relio-taille-lg);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.etapes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--relio-espace-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etape {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-1);
+}
+
+.etapeIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--relio-espace-12);
+  height: var(--relio-espace-12);
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-primaire-doux);
+  color: var(--relio-primaire);
+  margin-bottom: var(--relio-espace-2);
+}
+
+.etapeTitre {
+  margin: 0;
+  font-size: var(--relio-taille-base);
+  font-weight: var(--relio-gras-semibold);
+  color: var(--relio-texte);
+}
+
+.etapePhrase {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Pied ----------------------------------------------------------------- */
+
+.pied {
+  margin-top: auto;
+  border-top: 1px solid var(--relio-bordure);
+  background: var(--relio-surface);
+  padding: var(--relio-espace-6) 0 var(--relio-espace-8);
+}
+
+.piedTexte {
+  margin: 0 0 var(--relio-espace-4);
+  font-size: var(--relio-taille-xs);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+/*
+ * Les trois cartes passent en ligne à partir de 768 px. En dessous, une seule
+ * colonne : à 360 px, trois cartes côte à côte seraient illisibles.
+ */
+@media (min-width: 768px) {
+  .conteneur {
+    padding: var(--relio-espace-8) var(--relio-espace-8) var(--relio-espace-12);
+  }
+
+  .etapes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--relio-espace-4);
+  }
+}

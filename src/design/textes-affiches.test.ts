@@ -30,8 +30,9 @@ const MODULES_AFFICHES = [
   'components/Exercice.tsx',
   'components/ApiStatus.tsx',
   'components/ParcoursServeur.tsx',
-  'components/parcours.ts',
   'app/page.tsx',
+  'app/CarteRoute.tsx',
+  'app/page.module.css',
   'app/parcours/page.tsx',
   'app/parcours/[id]/page.tsx',
 ];

@@ -1,0 +1,19 @@
+/**
+ * Ligne d'état du service.
+ *
+ * La pastille porte l'information, le bouton porte l'action. Les deux restent
+ * sur une seule ligne à 360 px : cet élément est en bas de page, il ne doit
+ * pas écarter l'attention du contenu ni le faire déborder.
+ */
+
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: var(--relio-espace-3);
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.formulaire {
+  display: inline-flex;
+}
