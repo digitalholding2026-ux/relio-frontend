@@ -4,7 +4,16 @@
   --surface: #ffffff;
   --texte: #14161f;
   --texte-doux: #4d5468;
+  /* Bordure décorative : séparateurs, contours de carte, filets.
+     Elle n'a pas à être perceptible : sa seule fonction est de structurer. */
   --bordure: #e2e5ef;
+  /* Bordure d'élément interactif : champ de saisie, touche de clavier.
+     Seuil WCAG 2.1 SC 1.4.11 : 3:1 minimum pour une frontière qui permet de
+     identifier un contrôle. `#e2e5ef` sur `#ffffff` ne vaut que 1,26:1 — un
+     élève en plein soleil ou avec une basse vision ne distingue ni le champ ni
+     la touche. `#7c85a3` vaut 3,66:1 sur blanc et 3,45:1 sur le fond de page,
+     tout en restant dans la famille bleutée du thème. */
+  --bordure-forte: #7c85a3;
   --primaire: #2b4bd8;
   --primaire-sombre: #1e37a8;
   --primaire-doux: #eef1fe;
@@ -300,22 +309,36 @@ body {
   margin-top: 0.75rem;
 }
 
+/* Bouton — déclaration unique.
+   Ce bloc était déclaré deux fois dans cette feuille (l.303 puis l.477). Les
+   deux règles avaient la même spécificité : la seconde écrasait la première,
+   et le bouton principal de l'accueil s'affichait blanc au repos puis bleu au
+   survol. Les deux déclarations sont ici fusionnées.
+
+   La base est neutre (`--surface`) : c'est le bouton le plus fréquent
+   (actions de l'exercice, bouton « Revérifier »). La couleur d'accent est le
+   rôle de `.bouton--principal`, qui n'a de sens que sur un bouton qu'on veut
+   pousser à cliquer.
+
+   La cible tactile de 48 px vient du second bloc et est conservée : c'est le
+   plancher retenu au chantier 4 sur écran Android étroit. */
 .bouton {
   appearance: none;
-  border: 1px solid var(--primaire);
-  background: var(--primaire);
-  color: #fff;
-  border-radius: 10px;
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+  min-height: 48px;
+  padding: 0 1.1rem;
+  border: 1px solid var(--bordure-forte);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  font-size: 1rem;
   font-weight: 650;
   font-family: inherit;
   cursor: pointer;
 }
 
 .bouton:hover:not(:disabled) {
-  background: var(--primaire-sombre);
   border-color: var(--primaire-sombre);
+  background: var(--primaire-doux);
 }
 
 .bouton:disabled {
@@ -373,6 +396,9 @@ body {
   padding: 2rem 0 1rem;
 }
 
+/* Bouton d'action principale : le seul bouton bleu de la page. Le survol
+   assombrit le fond au lieu de l'éclaircir — passer du bleu au bleu pâle se
+   lirait comme une désactivation. */
 .bouton--principal {
   background: var(--primaire);
   color: #fff;
@@ -451,11 +477,13 @@ body {
   color: var(--texte-doux);
 }
 
+/* Champ de saisie : bordure `--bordure-forte`, parce qu'un champ doit être
+   repérable avant même d'être focalisé (3,66:1 sur blanc, seuil AA SC 1.4.11). */
 .exercice__saisie {
   min-height: 52px;
   font-size: 1.15rem;
   padding: 0.7rem 0.9rem;
-  border: 1px solid var(--bordure);
+  border: 1px solid var(--bordure-forte);
   border-radius: var(--rayon);
   background: var(--surface);
   color: var(--texte);
@@ -472,18 +500,6 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-}
-
-.bouton {
-  min-height: 48px;
-  padding: 0 1.1rem;
-  border-radius: var(--rayon);
-  border: 1px solid var(--bordure);
-  background: var(--surface);
-  color: var(--texte);
-  font-size: 1rem;
-  font-family: inherit;
-  cursor: pointer;
 }
 
 .indices {
@@ -620,7 +636,9 @@ body {
   line-height: 1.1;
   color: var(--texte);
   background: var(--surface);
-  border: 1px solid var(--bordure);
+  /* La touche est un contrôle : sa bordure doit être perceptible, pas
+     décorative. 3,66:1 sur blanc. */
+  border: 1px solid var(--bordure-forte);
   border-radius: 10px;
   cursor: pointer;
   touch-action: manipulation;

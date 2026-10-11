@@ -94,7 +94,7 @@ export default function Accueil() {
           </p>
         </section>
 
-        <div className="avertissement" role="note">
+        <div className="avertissement" role="status">
           <span className="avertissement__icone" aria-hidden="true">
             !
           </span>
@@ -175,8 +175,11 @@ export default function Accueil() {
             Cameroun.
           </p>
           <p>
-            Aucun contenu d’épreuve officielle n’est reproduit. Aucune donnée
-            personnelle n’est collectée, et tes réponses ne sont pas conservées.
+            Aucun contenu d’épreuve officielle n’est reproduit, et aucune donnée
+            personnelle n’est collectée. Tes réponses sont enregistrées sur ton
+            appareil pour te permettre de suivre ta progression ; tu peux les
+            effacer à tout moment, et rien n’est conservé de ton parcours sur nos
+            serveurs.
           </p>
         </div>
       </footer>

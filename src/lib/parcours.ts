@@ -136,7 +136,7 @@ async function appeler<T>(baseUrl: string, chemin: string, init?: RequestInit): 
 /** Charge le parcours. Ne renvoie jamais de données inventées. */
 export async function chargerParcours(baseUrl: string): Promise<ParcoursEtat> {
   if (!baseUrl) {
-    return { kind: 'indisponible', raison: 'Le service de exercices n’est pas configuré sur ce déploiement.' };
+    return { kind: 'indisponible', raison: 'Le service d’exercices n’est pas configuré sur ce déploiement.' };
   }
 
   try {

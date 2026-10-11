@@ -34,7 +34,12 @@ export default defineConfig({
      * réclamer le même fichier : la seconde qui le trouve échoue avec une
      * erreur incompréhensible.
      */
-    include: ['src/components/**/*.test.tsx', 'src/design/**/*.test.ts', 'src/hooks/**/*.test.tsx'],
+    include: [
+      'src/app/**/*.test.tsx',
+      'src/components/**/*.test.tsx',
+      'src/design/**/*.test.ts',
+      'src/hooks/**/*.test.tsx',
+    ],
     globals: false,
     setupFiles: ['./src/design/setup.ts'],
   },

@@ -65,7 +65,7 @@ export async function ParcoursServeur({ baseUrl }: { baseUrl: string }) {
           </ul>
 
           {!bloc.disponible ? (
-            <p className="message-ferme" role="note">
+            <p className="message-ferme" role="status">
               {bloc.semainesAvantOuverture !== null
                 ? `Disponible à partir de la semaine ${bloc.semaineDebut}.`
                 : 'Ce bloc n’est pas encore ouvert.'}

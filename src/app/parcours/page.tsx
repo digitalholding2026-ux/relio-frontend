@@ -47,7 +47,7 @@ export default async function PageParcours() {
           </p>
         </header>
 
-        <div className="avertissement" role="note">
+        <div className="avertissement" role="status">
           <span className="avertissement__icone" aria-hidden="true">
             !
           </span>

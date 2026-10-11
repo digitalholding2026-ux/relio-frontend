@@ -34,10 +34,13 @@
  * - chaque touche porte un `aria-label` en français : un glyphe seul (`^2`,
  *   `√`) n'est pas lu de façon utilisable par un lecteur d'écran ;
  * - le bloc est un `role="group"` avec un libellé ;
- * - fermeture et réouverture passent par des boutons nommés.
+ * - fermeture et réouverture passent par des boutons nommés ;
+ * - chaque touche réagit au `pointerdown` **et** au `click`, ce qui la rend
+ *   actionnable au clavier physique, au commutateur d'accès et à toute
+ *   technologie d'assistance, sans jamais exécuter l'action deux fois.
  */
 
-import { useCallback, useEffect, type RefObject } from 'react';
+import { useCallback, useEffect, type MouseEvent, type PointerEvent, type RefObject } from 'react';
 
 import {
   creerFraction,
@@ -164,7 +167,45 @@ export function ClavierMath({
     champRef.current?.focus({ preventScroll: true });
   }, []);
 
-return (
+  /**
+   * Activation au doigt ou à la souris.
+   *
+   * `pointerdown` est traité avant `click` pour deux raisons : sur Android, le
+   * `click` arrive après un délai pendant lequel le champ a perdu le focus — et
+   * le curseur avec. `preventDefault()` empêche en outre la génération du
+   * `click` qui suit, ce qui est exactement ce que l'on veut ici.
+   */
+  const surPointerDown = useCallback(
+    (evenement: PointerEvent<HTMLButtonElement>, action: ToucheAction) => {
+      evenement.preventDefault();
+      appuyer(action);
+    },
+    [appuyer],
+  );
+
+  /**
+   * Activation au clavier, au commutateur d'accès ou par une technologie
+   * d'assistance.
+   *
+   * Un `click` née du clavier porte toujours `detail === 0` : le navigateur
+   * ne compte aucun point d'appui. Un `click` issu d'un doigt, d'une souris ou
+   * d'un écran tactile porte `detail >= 1`.
+   *
+   * C'est cette propriété qui empêche l'action de s'exécuter deux fois quand le
+   * tactile déclenche `pointerdown` **puis** `click` : le second est ignoré,
+   * car il vient d'un point d'appui. Elle ne dépend d'aucun minuteur, d'aucun
+   * état à raisonner et ne peut pas rester bloquée si un `click` n'arrive
+   * jamais.
+   */
+  const surClick = useCallback(
+    (evenement: MouseEvent<HTMLButtonElement>, action: ToucheAction) => {
+      if (evenement.detail > 0) return;
+      appuyer(action);
+    },
+    [appuyer],
+  );
+
+  return (
     <div className="clavier" role="group" aria-label="Clavier mathématique">
       {rangees.map((rangee, index) => (
         <div
@@ -182,13 +223,8 @@ return (
               style={touche.largeur ? { gridColumn: `span ${touche.largeur}` } : undefined}
               aria-label={touche.aria}
               aria-controls={champId}
-              // `onPointerDown` et non `onClick` : sur Android, le `click` arrive
-              // après un délai pendant lequel le champ a perdu le focus — et le
-              // curseur avec.
-              onPointerDown={(evenement) => {
-                evenement.preventDefault();
-                appuyer(touche.action);
-              }}
+              onPointerDown={(evenement) => surPointerDown(evenement, touche.action)}
+              onClick={(evenement) => surClick(evenement, touche.action)}
             >
               {touche.libelle}
             </button>

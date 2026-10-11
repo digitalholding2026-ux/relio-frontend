@@ -46,7 +46,7 @@ export function ApiStatus({ baseUrl }: { baseUrl: string }) {
         return {
           classe: 'etat-api etat-api--succes',
           badge: { texte: 'Joignable', classe: 'badge--succes' },
-          titre: `APIRelio ${etat.version} — statut « ${etat.statut} »`,
+          titre: `API Relio ${etat.version} — statut « ${etat.statut} »`,
           detail:
             etat.statut === 'socle'
               ? 'Le backend répond. Cela ne signifie pas qu’une fonctionnalité pédagogique est disponible.'
