@@ -17,7 +17,7 @@ Cinq règles, dans l'ordre d'importance.
 1. **Mobile d'abord.** La largeur de référence est **360 px**. Tout ce qui n'est
    pas vérifié à 360 px n'est pas vérifié.
 2. **Peu de données.** Police système, icônes SVG, aucune image bitmap, aucune
-   animation coûteuse. Le CSS complet pèse **6,8 Ko gzip**, pour un budget de
+   animation coûteuse. Le CSS complet pèse **6,97 Ko gzip**, pour un budget de
    30 Ko.
 3. **AA sans exception.** Le contraste est **calculé**, jamais estimé à l'œil.
 4. **44 px au doigt.** Toute cible tactile, sans exception.
@@ -46,7 +46,7 @@ On utilise des **rôles**, jamais des teintes directement.
 | `--relio-succes` | `#16A34A` | `#16A34A` | réussite |
 | `--relio-alerte` | `#DC2626` | `#F87171` | erreur |
 
-#### Trois conflicts que la palette de marque ne résout pas
+#### Trois conflits que la palette de marque ne résout pas
 
 Les couleurs imposées ne passent pas toutes l'AA. Ces trois décisions en
 découlent, et elles sont **vérifiées par test** :
@@ -206,14 +206,17 @@ proposer un produit dégradé.
 
 | Budget | Seuil | Actuel |
 |---|---|---|
-| CSS de production | 30 Ko gzip | **6,8 Ko** |
+| CSS de production | 30 Ko gzip | **6,97 Ko** (7 140 octets) |
 | Police externe | 0 | 0 |
 | Image bitmap | 0 | 0 |
 | Dépendance UI lourde | 0 | 0 |
 
-Le contrôle du CSS est automatisé : `npm run verifier:poids`, branché dans la
-CI après le build. Un test ne conviendrait pas — il s'exécuterait avant que les
-CSS Modules aient été fusionnés.
+La valeur est celle retournée par `npm run verifier:poids` sur le build
+courant, qui l'arrondit à une décimale et affiche `7.0 Ko`.
+
+Le contrôle existe (`npm run verifier:poids`) et s'exécute manuellement. Il
+n'est pas branché dans la CI. Un test ne conviendrait pas — il s'exécuterait
+avant que les CSS Modules aient été fusionnés.
 
 ---
 
@@ -224,6 +227,12 @@ CSS Modules aient été fusionnés.
 - En développement et en prévisualisation : toujours accessible.
 - En production : accessible uniquement si `DESIGN_SYSTEM_ENABLED=on` est posé
   dans l'environnement de déploiement.
+
+**Pourquoi la page renvoyait 404 même avec la variable posée.** Elle était
+prérendue en erreur au build. Poser `DESIGN_SYSTEM_ENABLED=on` ne suffisait pas
+à la rendre accessible : la page devait être rendue dynamiquement. Ce point est
+corrigé au chantier A, correctif 6 — `dynamic = 'force-dynamic'`. La fermeture
+par défaut en production est conservée.
 
 Le projet ne dispose d'aucun système d'authentification et il n'en est pas
 introduit ici : une page interne n'est pas une raison de construire un contrôle
@@ -247,10 +256,14 @@ La page est par ailleurs marquée `noindex`.
 
 ## 9. Ce qui reste à faire
 
+- **Adoption nulle à ce jour.** Aucun composant du design system n'est utilisé
+  hors de `/design-system`. La seule page qui importe `src/components/ds/*` est
+  son propre catalogue. La migration de l'application est un chantier à part
+  entière.
 - **Migration des écrans existants.** `Exercice.tsx`, `ClavierMath.tsx` et
   `globals.css` utilisent encore leurs propres classes. Ce chantier livre les
-  fondations, pas la migration : c'est un chantier à part, qui doit se faire
-  écran par écran sans casser le parcours déjà vérifié en production.
+  fondations, pas la migration : elle doit se faire écran par écran, sans casser
+  le parcours déjà vérifié en production.
 - **Revue sur appareil.** Les contrastes sont calculés et exacts ; la taille
   réelle des cibles tactiles, le défilement et le rendu à 360 px **ne sont pas
   vérifiés** — ils demanderaient un téléphone.
