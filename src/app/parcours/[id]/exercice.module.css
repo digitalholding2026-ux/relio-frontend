@@ -1,0 +1,332 @@
+/**
+ * Écran d'exercice — feuille locale.
+ *
+ * ## Ce qui est ici, et ce qui n'y est pas
+ *
+ * **Le clavier n'est pas migré** : `.clavier*` reste dans `globals.css`, et
+ * `ClavierMath.tsx` n'a pas été touché (chantier C2b). C'est le seul endroit
+ * où la feuille globale reste légitime sur cet écran.
+ *
+ * Le style des boutons et des champs vient des composants `Bouton` et `Champ`
+ * du design system — aucune copie ici. Ce module ne fait que :
+ * l'ordre de lecture, les espacements, la mise en évidence de l'énoncé, la
+ * colonne contrainte pendant la saisie.
+ *
+ * ## La colonne contrainte
+ *
+ * `.exercice--saisie` reproduit le comportement du chantier 7.7, à
+ * l'identique : quand le clavier occupe l'écran, la zone du haut défile et le
+ * composeur reste visible. Sans cela, le clavier — qui mesure environ 453 px sur
+ * un écran de 640 — éjectait l'énoncé hors de l'écran.
+ *
+ * ## Aucune couleur brute
+ *
+ * Tout vient des tokens `--relio-*`. Aucune mesure hors de l'échelle
+ * 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
+ */
+
+/* --- Structure ------------------------------------------------------------ */
+
+.exercice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-4);
+}
+
+.exercice__zone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-4);
+}
+
+.exercice__composeur {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-3);
+}
+
+.exercice__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--relio-espace-2);
+}
+
+/* --- Titre de l'exercice --------------------------------------------------- */
+
+.enteteExercice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--relio-espace-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--relio-espace-2);
+}
+
+/* --- Énoncé ---------------------------------------------------------------- */
+
+/*
+ * L'énoncé est mis en évidence par sa **taille et son espace**, pas par une
+ * couleur de fond : un aplat derrière un énoncé mathématique le rendrait plus
+ * difficile à lire, pas plus saillant.
+ */
+.enonce {
+  margin: 0;
+  font-size: var(--relio-taille-lg);
+  line-height: var(--relio-interligne-titre);
+  font-weight: var(--relio-gras-semibold);
+  color: var(--relio-texte);
+}
+
+.consigne {
+  margin: 0;
+  font-size: var(--relio-taille-base);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte);
+}
+
+.forme {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Aperçu de la saisie --------------------------------------------------- */
+
+.apercu {
+  display: flex;
+  align-items: baseline;
+  gap: var(--relio-espace-2);
+  margin: 0;
+  padding: var(--relio-espace-2) var(--relio-espace-3);
+  border-radius: var(--relio-rayon-sm);
+  background: var(--relio-surface-haute);
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+.apercuLibelle {
+  flex: none;
+  font-weight: var(--relio-gras-semibold);
+  color: var(--relio-texte);
+}
+
+/* --- Verdict --------------------------------------------------------------- */
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-3);
+}
+
+.verdictEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--relio-espace-3);
+}
+
+.verdictIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--relio-espace-8);
+  height: var(--relio-espace-8);
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-surface-haute);
+  color: var(--relio-texte-secondaire);
+}
+
+.verdictStatut {
+  margin: 0;
+  font-size: var(--relio-taille-lg);
+  line-height: var(--relio-interligne-titre);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.verdictDetail {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+.verdictDetailDiscret {
+  font-style: italic;
+}
+
+/* --- Tutorat --------------------------------------------------------------- */
+
+.tutorat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+}
+
+.tutoratCarte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+  border-left: var(--relio-espace-1) solid var(--relio-primaire);
+}
+
+.tutoratEntete {
+  display: flex;
+  align-items: center;
+  gap: var(--relio-espace-2);
+}
+
+.tutoratPalier {
+  font-size: var(--relio-taille-xs);
+  color: var(--relio-texte-secondaire);
+}
+
+.tutoratMessage {
+  margin: 0;
+  font-size: var(--relio-taille-base);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte);
+}
+
+.tutoratAction {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--relio-espace-2);
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte);
+}
+
+.tutoratActionIcone {
+  flex: none;
+  margin-top: var(--relio-espace-1);
+  color: var(--relio-primaire);
+}
+
+.tutoratResume {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Indices --------------------------------------------------------------- */
+
+.indices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.indice {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte);
+}
+
+/* --- Suivi local ----------------------------------------------------------- */
+
+.suivi {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--relio-espace-2);
+  margin: 0;
+  padding-top: var(--relio-espace-3);
+  border-top: 1px solid var(--relio-bordure);
+}
+
+.suiviTitre {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-semibold);
+  color: var(--relio-texte);
+}
+
+.suiviNiveau {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Colonne contrainte pendant la saisie --------------------------------- */
+
+/*
+ * Le comportement est celui du chantier 7.7, à l'identique : hauteur calculée
+ * sur `100dvh` moins la hauteur mesurée du clavier système, zone du haut
+ * défilante, composeur et clavier toujours visibles.
+ *
+ * Le clavier lui-même n'est pas migré : ses règles restent dans
+ * `globals.css`. Les sélecteurs ci-dessous sont donc écrits avec `:global()`,
+ * pour cibler les classes du clavier sans les réécrire.
+ */
+.exerciceSaisie {
+  height: calc(100dvh - var(--relio-clavier-systeme, 0px));
+  max-height: calc(100dvh - var(--relio-clavier-systeme, 0px));
+  padding: 0;
+  overflow: hidden;
+}
+
+.exerciceSaisie .exercice__zone {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.exerciceSaisie .exercice__composeur {
+  flex: none;
+  border-top: 1px solid var(--relio-bordure);
+  background: var(--relio-surface);
+}
+
+/* Le clavier doit rester atteignable au doigt : on laisse le défilement
+   naturel agir plutôt que de fixer quoi que ce soit. */
+.exerciceSaisie :global(.clavier) {
+  position: static;
+  flex: none;
+  margin-top: 0;
+  box-shadow: none;
+  border-top: 1px solid var(--relio-bordure);
+}
+
+@media (min-width: 768px) {
+  .exercice__actions > * {
+    flex: 1 1 auto;
+  }
+}
+/* --- États de l'écran ------------------------------------------------------ */
+
+.enonceCarte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-3);
+}
+
+.saisieIllisible {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+}
+
+.formulaire {
+  display: flex;
+  justify-content: center;
+}
+
+/*
+ * La page réutilise le cadre de `/parcours` (`parcours.module.css`) : même
+ * en-tête, même conteneur, même pied. Seule cette classe est propre à l'écran
+ * d'exercice — la colonne contrainte quand le clavier est ouvert.
+ */
+.pageExercice {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}

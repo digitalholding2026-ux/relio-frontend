@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ClavierMath } from '@/components/ClavierMath';
+import { Carte } from '@/components/ds/Carte';
+import { Champ } from '@/components/ds/Input';
+import { EtatVide } from '@/components/ds/EtatVide';
+import { Squelette } from '@/components/ds/Skeleton';
+import { Bouton } from '@/components/ds/Bouton';
+import { Verdict } from '@/app/parcours/[id]/Verdict';
+import styles from '@/app/parcours/[id]/exercice.module.css';
 import { useHauteurClavierSysteme } from '@/hooks/useHauteurClavierSysteme';
 import {
   apercuLisible,
@@ -27,13 +34,7 @@ import {
   type ErreurSaisie,
   type ExercicePublic,
 } from '@/lib/parcours';
-import {
-  LIBELLE_NIVEAU,
-  LIBELLE_SUIVI,
-  texteAffiche,
-  type SuiviObjectif,
-  type Tutorat,
-} from '@/lib/tutorat';
+import { LIBELLE_SUIVI, type SuiviObjectif, type Tutorat } from '@/lib/tutorat';
 
 /**
  * Écran d'exercice — saisie au clavier mobile et verdict sur trois axes.
@@ -64,31 +65,6 @@ type Verdict = Correction | ErreurSaisie;
 
 function estErreurSaisie(verdict: Verdict): verdict is ErreurSaisie {
   return 'erreurSaisie' in verdict;
-}
-
-/**
- * Libellés de repli, par verdict.
- *
- * **Ils ne devraient jamais être utilisés** : le serveur fournit déjà
- * `libelle`, calculé par la même règle que le verdict. Ces valeurs servent si
- * l'API répond une version antérieure, sans le champ.
- */
-const LIBELLE_REPLI: Record<Correction['verdict'], string> = {
-  correct: 'Ta réponse est juste.',
-  partiellement_correct: 'Ta réponse est partiellement correcte.',
-  resultat_juste_consigne_non_respectee:
-    'Ton résultat est juste, mais pas dans la forme demandée.',
-  incorrect: 'Ce n’est pas encore juste.',
-  a_determiner: 'Ta réponse est juste ; la forme demandée reste à vérifier.',
-};
-
-/**
- * Le libellé affiché vient du serveur. Il n'est amputé d'aucun mot : c'est le
- * retour pédagogique validé par l'enseignant.
- */
-function libelleAffiche(correction: Correction): string {
-  const fourni = correction.libelle?.trim();
-  return fourni && fourni.length > 0 ? fourni : LIBELLE_REPLI[correction.verdict];
 }
 
 export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId: string }) {
@@ -225,20 +201,29 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
 
   if (erreurChargement !== null) {
     return (
-      <div className="carte">
-        <p role="status">{erreurChargement}</p>
-        <Link className="lien" href="/parcours">
-          Retour au parcours
-        </Link>
-      </div>
+      <Carte>
+        <EtatVide
+          icone="info"
+          titre="Cet exercice n’est pas disponible pour le moment"
+          description="Le service n’a pas répondu. La page fonctionne ; seul l’exercice est en attente."
+        >
+          <form action="/parcours" method="get" className={styles.formulaire}>
+            <Bouton type="submit" variante="secondary">
+              Réessayer
+            </Bouton>
+          </form>
+        </EtatVide>
+      </Carte>
     );
   }
 
   if (exercice === null) {
     return (
-      <div className="carte" role="status">
-        <p>Chargement de l’exercice…</p>
-      </div>
+      <Carte role="status">
+        <Squelette hauteur={24} largeur="70%" />
+        <Squelette hauteur={16} />
+        <Squelette hauteur={52} />
+      </Carte>
     );
   }
 
@@ -256,41 +241,42 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
 
   return (
     <article
-      className={`carte exercice${enSaisie ? ' exercice--saisie' : ''}`}
+      className={`${styles.exercice}${enSaisie ? ` ${styles.exerciceSaisie}` : ''}`}
       data-clavier-systeme={clavierSystemeVisible.hauteur}
     >
       {/* --- Zone défilante : ce qui se lit, pas ce qui se saisit --------- */}
-      <div className="exercice__zone">
-        <p className="exercice__enonce">{exercice.enonce}</p>
-        <p className="exercice__consigne">{exercice.consigne}</p>
-
-        {exercice.formeDemandee !== null && (
-          <p className="exercice__forme">Réponse attendue : {exercice.formeDemandee}.</p>
-        )}
+      <div className={styles.exercice__zone}>
+        <Carte variante="elevee" className={styles.enonceCarte}>
+          <p className={styles.enonce}>{exercice.enonce}</p>
+          <p className={styles.consigne}>{exercice.consigne}</p>
+          {exercice.formeDemandee !== null && (
+            <p className={styles.forme}>Réponse attendue : {exercice.formeDemandee}.</p>
+          )}
+        </Carte>
 
         {indices.length > 0 && (
-          <section className="indices" aria-label="Indices">
+          <Carte sansOmbre className={styles.indices} aria-label="Indices">
             {indices.map((texte, position) => (
-              <p className="indice" key={position}>
+              <p className={styles.indice} key={position}>
                 <strong>Indice {position + 1}.</strong> {texte}
               </p>
             ))}
-          </section>
+          </Carte>
         )}
 
         {/* Suivi local (chantier 7.5). Information de fin d'écran : elle vit
             dans la zone défilante, pas dans le composeur, pour ne pas réduire
             la place du champ pendant la saisie. */}
         {tentatives > 0 && (
-          <section className="suivi" aria-label="Mon suivi">
-            <p className="suivi__titre">
+          <Carte sansOmbre className={styles.suivi} aria-label="Mon suivi">
+            <p className={styles.suiviTitre}>
               {tentatives} tentative{tentatives > 1 ? 's' : ''} enregistrée
               {tentatives > 1 ? 's' : ''} sur cet appareil.
             </p>
-            {suivi !== null && <p className="suivi__niveau">{LIBELLE_SUIVI[suivi.niveau]}</p>}
-            <button
-              className="bouton bouton--discret"
-              type="button"
+            {suivi !== null && <p className={styles.suiviNiveau}>{LIBELLE_SUIVI[suivi.niveau]}</p>}
+            <Bouton
+              variante="ghost"
+              taille="sm"
               onClick={() => {
                 effacerJournal();
                 setTentatives(0);
@@ -298,68 +284,73 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
               }}
             >
               Effacer mon historique
-            </button>
-          </section>
+            </Bouton>
+          </Carte>
         )}
       </div>
 
       {/* --- Composeur : ce qui reste visible pendant la saisie ----------- */}
-      <div className="exercice__composeur" ref={composeurRef}>
-      <label className="exercice__champ" htmlFor="reponse">
-        <span className="exercice__label">Ta réponse</span>
-        <input
-          id="reponse"
-          ref={champRef}
-          className="exercice__saisie"
-          type="text"
-          // `none` supprime le clavier système Android sans empêcher la saisie
-          // au clavier physique. L'élève peut revenir au clavier système avec
-          // le bouton dédié.
-          inputMode={clavierSysteme ? 'text' : 'none'}
-          autoComplete="off"
-          autoCapitalize="off"
-          spellCheck={false}
-          onFocus={activerSaisie}
-          onClick={activerSaisie}
-          placeholder={
-            // Exemples **structurels uniquement** : un exemple chiffré
-            // pourrait coïncider avec la réponse attendue d'un exercice et
-            // constituer un indice involontaire.
-            exercice.typeReponse === 'racine'
-              ? 'a√b'
-              : exercice.typeReponse === 'expression'
-                ? 'Ax + B'
-                : 'a/b'
-          }
-          value={saisie.valeur}
-          onChange={(evenement) => setSaisie({ valeur: evenement.target.value, curseur: evenement.target.selectionStart ?? evenement.target.value.length })}
-        />
-      </label>
+      <div className={styles.exercice__composeur} ref={composeurRef}>
+      {/* `Champ` relie le label, l'aide et l'erreur — l'ancien `<label>` posé à
+          la main faisait la moitié du travail seulement. */}
+      <Champ
+        label="Ta réponse"
+        aide={
+          exercice.formeDemandee !== null
+            ? `Réponse attendue : ${exercice.formeDemandee}.`
+            : undefined
+        }
+        ref={champRef}
+        type="text"
+        // `none` supprime le clavier système Android sans empêcher la saisie
+        // au clavier physique. L'élève peut revenir au clavier système avec
+        // le bouton dédié.
+        inputMode={clavierSysteme ? 'text' : 'none'}
+        autoComplete="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        onFocus={activerSaisie}
+        onClick={activerSaisie}
+        placeholder={
+          // Exemples **structurels uniquement** : un exemple chiffré
+          // pourrait coïncider avec la réponse attendue d'un exercice et
+          // constituer un indice involontaire.
+          exercice.typeReponse === 'racine'
+            ? 'a√b'
+            : exercice.typeReponse === 'expression'
+              ? 'Ax + B'
+              : 'a/b'
+        }
+        value={saisie.valeur}
+        onChange={(evenement) => setSaisie({ valeur: evenement.target.value, curseur: evenement.target.selectionStart ?? evenement.target.value.length })}
+      />
 
       {apercu !== '' && (
-        <p className="exercice__apercu" aria-live="polite">
+        <p className={styles.apercu} aria-live="polite">
+          <span className={styles.apercuLibelle}>Tu écris :</span>
           {apercu}
         </p>
       )}
 
-      <div className="exercice__actions">
-        <button
-          className="bouton bouton--principal"
-          type="button"
+      <div className={styles.exercice__actions}>
+        <Bouton
+          variante="primary"
+          taille="lg"
+          pleineLargeur
           onClick={() => void envoyer()}
           disabled={enCours || saisie.valeur.trim() === ''}
         >
           {enCours ? 'Vérification…' : 'Vérifier'}
-        </button>
+        </Bouton>
         {aidesRestantes > 0 && (
-          <button
-            className="bouton"
-            type="button"
+          <Bouton
+            variante="secondary"
+            taille="lg"
             onClick={() => void demanderAide()}
             disabled={enCours}
           >
             {aidesRestantes === 1 ? 'Un indice' : `Un indice (${aidesRestantes})`}
-          </button>
+          </Bouton>
         )}
       </div>
 
@@ -368,76 +359,22 @@ export function Exercice({ baseUrl, exerciceId }: { baseUrl: string; exerciceId:
           donc jamais à *demander* l'affichage du clavier — c'est le champ qui
           s'en charge. */}
       {clavierSysteme && !clavierOuvert && (
-        <button className="bouton" type="button" onClick={basculerSysteme}>
+        <Bouton variante="secondary" taille="lg" onClick={basculerSysteme}>
           Revenir au clavier mathématique
-        </button>
+        </Bouton>
       )}
 
       {verdict !== null && estErreurSaisie(verdict) && (
-        <p className="verdict verdict--alerte" role="status">
-          {verdict.message}
-          {verdict.tutorat && (
-            <span className="tutorat__action"> {verdict.tutorat.action}</span>
-          )}
-        </p>
+        <Carte className={styles.saisieIllisible} role="status">
+          <p className={styles.verdictStatut}>{verdict.message}</p>
+          {verdict.tutorat && <p className={styles.verdictDetail}>{verdict.tutorat.action}</p>}
+        </Carte>
       )}
 
       {correction !== null && (
-        <section
-          // La classe suit le **verdict** (décision D5) et non le statut
-          // technique : « partiellement correct » et « résultat juste,
-          // consigne non respectée » doivent se distinguer visuellement.
-          className={`verdict verdict--${correction.verdict}`}
-          role="status"
-          aria-live="polite"
-        >
-          <p className="verdict__statut">{libelleAffiche(correction)}</p>
-
-          {/* Chantier 7.5 : aide progressive. Le niveau affiché est celui que le
-              serveur a choisi ; l'écran ne le calcule pas. */}
-          {tutorat !== null && (
-            <div className="tutorat">
-              <p className="tutorat__niveau">
-                {correction.statut === 'correcte'
-                  ? 'Bilan'
-                  : `${LIBELLE_NIVEAU[tutorat.niveau]} — aide ${tutorat.niveau} sur 3`}
-              </p>
-              <p className="tutorat__message">
-                {texteAffiche(tutorat, correction.explication)}
-              </p>
-              {tutorat.niveau >= 2 && correction.statut !== 'correcte' && (
-                <p className="tutorat__action">👉 {tutorat.action}</p>
-              )}
-              {tutorat.resume !== null && (
-                <p className="tutorat__resume">
-                  <strong>Méthode à retenir :</strong> {tutorat.resume}
-                </p>
-              )}
-            </div>
-          )}
-
-          {tutorat === null && (
-            <p className="verdict__detail">{correction.explication}</p>
-          )}
-
-          {correction.verdict === 'resultat_juste_consigne_non_respectee' && (
-            <p className="verdict__detail">
-              Ton calcul est bon : il reste seulement à l’écrire comme la consigne le demande.
-            </p>
-          )}
-          {correction.achevement === 'inacheve' && (
-            <p className="verdict__detail">
-              Tu as bien commencé ! Il reste une étape.
-            </p>
-          )}
-          {correction.lectureArbitree === false && (
-            // Point non arbitré : on ne présente jamais ce cas comme une
-            // conclusion ferme.
-            <p className="verdict__detail verdict__detail--discret">
-              Ton enseignant vérifiera ce point.
-            </p>
-          )}
-        </section>
+        <div role="status" aria-live="polite">
+          <Verdict correction={correction} tutorat={tutorat} />
+        </div>
       )}
 
       </div>

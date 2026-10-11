@@ -39,8 +39,12 @@ const SOURCES_MIGREES = [
 
 const MODULES_CSS = ['app/parcours/parcours.module.css'];
 
-/** Les fichiers du chantier suivant : ils doivent rester intacts. */
-const SOURCES_C2 = ['app/parcours/[id]/page.tsx', 'components/Exercice.tsx', 'components/ClavierMath.tsx'];
+/**
+ * Le clavier — chantier C2b. Il ne doit recevoir **aucun** import du design
+ * system : ses styles restent dans `globals.css`, et `lib/clavier.ts` n'a pas
+ * été touché.
+ */
+const SOURCES_C2 = ['components/ClavierMath.tsx'];
 
 /**
  * Classes de `globals.css` que `/parcours` utilisait avant le chantier C1.
@@ -98,7 +102,7 @@ describe('/parcours — les fichiers migrés existent', () => {
     }
   });
 
-  it('les fichiers du chantier suivant sont présents et non migrés', () => {
+  it('les fichiers du chantier suivant sont présents', () => {
     for (const relatif of SOURCES_C2) {
       expect(() => readFileSync(join(RACINE, relatif), 'utf8')).not.toThrow();
     }
@@ -138,13 +142,14 @@ describe('/parcours — aucune classe globale', () => {
     }
   });
 
-  it('les fichiers du chantier C2 n’ont pas été touchés', () => {
-    // Une migration de `/parcours` qui glisserait dans l'écran d'exercice
-    // laisserait des classes orphelines et des tests rouges : on le vérifie.
+  it('ClavierMath.tsx n’a reçu aucun import du design system (C2b)', () => {
+    // Le clavier n'est pas migré au C2a. Ses styles restent dans
+    // `globals.css` — c'est le seul endroit de la feuille globale qui reste
+    // légitime sur un écran migré.
     for (const relatif of SOURCES_C2) {
       const source = sansCommentaires(contenu(relatif));
-      // Aucun import du design system ne doit avoir été introduit.
       expect(source, `${relatif} : import du design system`).not.toMatch(/@\/components\/ds/);
+      expect(source, `${relatif} : import d'un module CSS`).not.toMatch(/\.module\.css/);
     }
   });
 });
