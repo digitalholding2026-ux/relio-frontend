@@ -1,0 +1,290 @@
+/**
+ * Page du parcours — feuille locale.
+ *
+ * ## Pourquoi un module, et non `globals.css`
+ *
+ * Chantier C1 : la page `/parcours` est migrée sur le design system. Elle
+ * n'utilise plus aucune classe globale. Ce qui reste dans `globals.css`
+ * appartient aux écrans non encore repris — `/parcours/[id]` et `Exercice.tsx`,
+ * qui relèvent du chantier C2.
+ *
+ * Toutes les couleurs et tous les espacements viennent des tokens
+ * `--relio-*`. Aucune couleur brute, aucune mesure hors de l'échelle
+ * 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
+ *
+ * ## Ce qui n'est pas dans ce fichier
+ *
+ * Le style des liens d'exercice. Il vient de `Bouton.module.css`, la feuille du
+ * composant `Bouton` : un bouton et un lien d'exercice ne peuvent pas
+ * diverger. `.lienExercice` n'ajoute que ce que cette feuille ne prévoit pas —
+ * un texte de plusieurs lignes, aligné à gauche.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--relio-fond);
+  color: var(--relio-texte);
+}
+
+.conteneur {
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--relio-espace-6) var(--relio-espace-4) var(--relio-espace-8);
+}
+
+/* --- En-tête -------------------------------------------------------------- */
+
+.entete {
+  padding-top: var(--relio-espace-6);
+  margin-bottom: var(--relio-espace-6);
+}
+
+.enteteMarque {
+  display: flex;
+  align-items: center;
+  gap: var(--relio-espace-2);
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-semibold);
+  color: var(--relio-texte-secondaire);
+}
+
+.enteteLogo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--relio-espace-8);
+  height: var(--relio-espace-8);
+  border-radius: var(--relio-rayon-md);
+  background: var(--relio-primaire);
+  color: var(--relio-primaire-sur);
+  font-weight: var(--relio-gras-bold);
+}
+
+.titre {
+  margin: var(--relio-espace-4) 0 0;
+  font-size: var(--relio-taille-2xl);
+  line-height: var(--relio-interligne-titre);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.sousTitre {
+  margin: var(--relio-espace-1) 0 0;
+  font-size: var(--relio-taille-base);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Bandeau -------------------------------------------------------------- */
+
+.avertissement {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--relio-espace-3);
+  padding: var(--relio-espace-3) var(--relio-espace-4);
+  margin-bottom: var(--relio-espace-6);
+  border-radius: var(--relio-rayon-md);
+  border: 1px solid var(--relio-bordure-forte);
+  background: var(--relio-attention-fond);
+  color: var(--relio-attention-encre);
+  font-size: var(--relio-taille-sm);
+  line-height: var(--relio-interligne-corps);
+}
+
+.avertissementIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--relio-espace-6);
+  height: var(--relio-espace-6);
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-attention);
+  color: var(--relio-attention-sur);
+  font-weight: var(--relio-gras-bold);
+}
+
+/* --- État de l'année ------------------------------------------------------ */
+
+.etatAnnee {
+  margin-bottom: var(--relio-espace-6);
+}
+
+.titreListe {
+  margin: 0 0 var(--relio-espace-3);
+  font-size: var(--relio-taille-lg);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.noteAnnee {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+.liste {
+  margin-bottom: var(--relio-espace-8);
+}
+
+
+.blocs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-4);
+}
+
+/* --- Un bloc -------------------------------------------------------------- */
+
+.bloc {
+  margin: 0;
+}
+
+.blocCarte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-3);
+}
+
+.blocEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--relio-espace-3);
+  flex-wrap: wrap;
+}
+
+.blocTitre {
+  margin: 0;
+  font-size: var(--relio-taille-lg);
+  line-height: var(--relio-interligne-titre);
+  font-weight: var(--relio-gras-bold);
+  color: var(--relio-texte);
+}
+
+.blocNote {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+.objectifs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+.objectifs > li {
+  padding-left: var(--relio-espace-3);
+  border-left: var(--relio-espace-1) solid var(--relio-primaire-doux);
+}
+
+.ferme {
+  margin: 0;
+  font-size: var(--relio-taille-sm);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Les exercices -------------------------------------------------------- */
+
+.exercices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Les liens d'exercice portent le style du composant `Bouton` du design
+ * system — feuille importée dans `BlocCarte.tsx`. Ce bloc n'ajoute que ce que
+ * cette feuille ne prévoit pas : le texte de la consigne tient sur plusieurs
+ * lignes et le lien se lit à gauche, pas centré comme un bouton d'action.
+ */
+.lienExercice {
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: var(--relio-espace-3);
+  padding: var(--relio-espace-3) var(--relio-espace-4);
+  white-space: normal;
+  text-align: left;
+  border-width: 1px;
+}
+
+.rang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--relio-espace-8);
+  height: var(--relio-espace-8);
+  border-radius: var(--relio-rayon-full);
+  background: var(--relio-primaire-doux);
+  color: var(--relio-primaire);
+  font-weight: var(--relio-gras-bold);
+}
+
+.exerciceTexte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--relio-espace-1);
+  min-width: 0;
+}
+
+.exerciceTitre {
+  font-weight: var(--relio-gras-semibold);
+}
+
+.exerciceDetail {
+  font-size: var(--relio-taille-sm);
+  font-weight: var(--relio-gras-normal);
+  line-height: var(--relio-interligne-corps);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- État vide ------------------------------------------------------------ */
+
+.formulaire {
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Pied ----------------------------------------------------------------- */
+
+.pied {
+  margin-top: auto;
+  border-top: 1px solid var(--relio-bordure);
+  background: var(--relio-surface);
+  padding: var(--relio-espace-6) 0 var(--relio-espace-8);
+}
+
+/*
+ * Le lien de retour reprend le style du composant `Bouton` — importé dans
+ * `page.tsx` — en variante fantôme. Ici seule la présentation est redonnée.
+ */
+.lienRetour {
+  justify-content: flex-start;
+  white-space: normal;
+}
+
+@media (min-width: 768px) {
+  .conteneur {
+    padding: var(--relio-espace-8) var(--relio-espace-8) var(--relio-espace-12);
+  }
+}
+/*
+ * L'icône du lien de retour pointe vers la droite dans le design system
+ * (`chevron`). Sur « Retour à l'accueil », elle pointe vers la gauche — on la
+ * fait pivoter. `transform` ne modifie pas la boîte de focus.
+ */
+.fleche {
+  transform: rotate(180deg);
+}

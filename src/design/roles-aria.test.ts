@@ -109,12 +109,15 @@ describe('Rôles ARIA — contrôle statique', () => {
 
   it('chaque écran qui a encore un message à annoncer porte un rôle annonçant', () => {
     // Chantier B : l'accueil n'a plus de bandeau d'avertissement — son contenu
-    // vient de l'API et ne peut donc pas annoncer un périmètre périmé. Les deux
-    // écrans qui affichent encore un message de contexte doivent porter
-    // `status` ou `alert`.
+    // vient de l'API et ne peut donc pas annoncer un périmètre périmé.
+    //
+    // Chantier C1 : le rendu du parcours a quitté `components/ParcoursServeur.tsx`
+    // — devenu le simple appelant de l'API — pour `app/parcours/BlocCarte.tsx`,
+    // qui porte désormais le message de bloc fermé. Les fichiers qui portent un
+    // message à annoncer ont donc changé.
     const announcing = rolesUtilises().filter((r) => r.role === 'status' || r.role === 'alert');
     const fichiers = new Set(announcing.map((r) => r.fichier));
-    for (const attendu of ['app/parcours/page.tsx', 'components/ParcoursServeur.tsx']) {
+    for (const attendu of ['app/parcours/page.tsx', 'app/parcours/BlocCarte.tsx']) {
       expect(fichiers.has(attendu), `${attendu} ne porte aucun rôle status/alert`).toBe(true);
     }
   });

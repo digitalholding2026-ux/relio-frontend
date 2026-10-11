@@ -21,6 +21,22 @@ vi.mock('@/lib/parcours', async (importOriginal) => {
 const { chargerParcours } = await import('@/lib/parcours');
 const chargerParcoursSimule = vi.mocked(chargerParcours);
 
+/** Un exercice minimal, pour qu'un bloc soit réellement ouvrable. */
+function exerciceExemple() {
+  return {
+    id: 'MVP-B1-E1',
+    blocId: 'B1',
+    rang: 1,
+    objectifs: [],
+    enonce: 'Énoncé',
+    consigne: 'Consigne',
+    typeReponse: 'expression' as const,
+    formeDemandee: null,
+    nbIndices: 3,
+    origine: 'originale' as const,
+  };
+}
+
 function parcoursAvecBlocs(blocs: unknown[]) {
   chargerParcoursSimule.mockResolvedValue(
     // La forme suit `ParcoursEtat` : seules les clés lues par le rendu sont
@@ -44,7 +60,21 @@ function parcoursAvecBlocs(blocs: unknown[]) {
 
 describe('ParcoursServeur — rôle du message de bloc fermé', () => {
   it('le message « disponible à partir de la semaine N » est exposé au lecteur d’écran', async () => {
+    // Chantier C1 : un bloc fermé n'apparaît dans la liste que s'il y en a au
+    // moins un d'ouvert — sinon l'écran affiche un état global. On ajoute donc
+    // un bloc ouvert, sinon le message testé n'a pas lieu d'être.
     parcoursAvecBlocs([
+      {
+        id: 'B1',
+        titre: 'Calcul littéral',
+        leconId: 'LEC-CM-MATH-3E-2025-2026-01',
+        volumeHoraireH: 7,
+        semaineDebut: 1,
+        disponible: true,
+        semainesAvantOuverture: null,
+        objectifs: [],
+        exercices: [exerciceExemple()],
+      },
       {
         id: 'B3',
         titre: 'Statistiques',
@@ -68,6 +98,17 @@ describe('ParcoursServeur — rôle du message de bloc fermé', () => {
 
   it('le message « bloc pas encore ouvert » est exposé au lecteur d’écran', async () => {
     parcoursAvecBlocs([
+      {
+        id: 'B1',
+        titre: 'Calcul littéral',
+        leconId: 'LEC-CM-MATH-3E-2025-2026-01',
+        volumeHoraireH: 7,
+        semaineDebut: 1,
+        disponible: true,
+        semainesAvantOuverture: null,
+        objectifs: [],
+        exercices: [exerciceExemple()],
+      },
       {
         id: 'B2',
         titre: 'Fonctions',
