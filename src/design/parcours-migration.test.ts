@@ -142,14 +142,12 @@ describe('/parcours — aucune classe globale', () => {
     }
   });
 
-  it('ClavierMath.tsx n’a reçu aucun import du design system (C2b)', () => {
-    // Le clavier n'est pas migré au C2a. Ses styles restent dans
-    // `globals.css` — c'est le seul endroit de la feuille globale qui reste
-    // légitime sur un écran migré.
+  it('ClavierMath.tsx n’utilise plus aucune classe de globals.css (C2b)', () => {
+    // Migré au chantier C2b : son habillage vient de modules locaux.
     for (const relatif of SOURCES_C2) {
       const source = sansCommentaires(contenu(relatif));
-      expect(source, `${relatif} : import du design system`).not.toMatch(/@\/components\/ds/);
-      expect(source, `${relatif} : import d'un module CSS`).not.toMatch(/\.module\.css/);
+      expect(source, `${relatif} : import de globals.css`).not.toMatch(/globals\.css/);
+      expect(source, `${relatif} : classe clavier__`).not.toMatch(/clavier__/);
     }
   });
 });

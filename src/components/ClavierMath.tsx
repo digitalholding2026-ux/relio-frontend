@@ -38,10 +38,24 @@
  * - chaque touche réagit au `pointerdown` **et** au `click`, ce qui la rend
  *   actionnable au clavier physique, au commutateur d'accès et à toute
  *   technologie d'assistance, sans jamais exécuter l'action deux fois.
+ *
+ * ## Chantier C2b — migration sur le design system
+ *
+ * Seule **l'habillage** change. Les deux gestionnaires d'activation ci-dessus,
+ * la discrimination `detail > 0`, la grille de `rangeesPour()` et le
+ * pilotage de l'`<input>` natif sont **inchangés** : ils sont déplacés dans
+ * `ToucheClavier.tsx`, pas réécrits.
+ *
+ * La touche n'est pas rendue par le composant `Bouton` du design system : il
+ * impose `min-height: 48px`, et le clavier fait 9 rangées de 44 px. L'utiliser
+ * porterait le clavier de 453 à 485 px et recouvrirait à nouveau l'énoncé —
+ * exactement ce que le chantier 7.7 a corrigé. Voir `ToucheClavier.module.css`.
  */
 
 import { useCallback, useEffect, type MouseEvent, type PointerEvent, type RefObject } from 'react';
 
+import { ToucheClavier } from '@/components/ToucheClavier';
+import styles from '@/components/clavier.module.css';
 import {
   creerFraction,
   deplacer,
@@ -51,6 +65,7 @@ import {
   retirer,
   COLONNES,
   type EtatSaisie,
+  type Touche,
   type ToucheAction,
   type TypeReponse,
 } from '@/lib/clavier';
@@ -176,9 +191,9 @@ export function ClavierMath({
    * `click` qui suit, ce qui est exactement ce que l'on veut ici.
    */
   const surPointerDown = useCallback(
-    (evenement: PointerEvent<HTMLButtonElement>, action: ToucheAction) => {
+    (evenement: PointerEvent<HTMLButtonElement>, touche: Touche) => {
       evenement.preventDefault();
-      appuyer(action);
+      appuyer(touche.action);
     },
     [appuyer],
   );
@@ -198,36 +213,31 @@ export function ClavierMath({
    * jamais.
    */
   const surClick = useCallback(
-    (evenement: MouseEvent<HTMLButtonElement>, action: ToucheAction) => {
+    (evenement: MouseEvent<HTMLButtonElement>, touche: Touche) => {
       if (evenement.detail > 0) return;
-      appuyer(action);
+      appuyer(touche.action);
     },
     [appuyer],
   );
 
   return (
-    <div className="clavier" role="group" aria-label="Clavier mathématique">
+    <div className={styles.clavier} role="group" aria-label="Clavier mathématique">
       {rangees.map((rangee, index) => (
         <div
           // Chaque rangée est une grille indépendante de quatre colonnes : le
           // regroupement visuel est fait par le CSS, pas par des sauts de ligne.
-          className="clavier__rangee"
+          className={styles.rangee}
           key={`rangee-${index}`}
           style={{ ['--colonnes' as string]: String(COLONNES) }}
         >
           {rangee.touches.map((touche) => (
-            <button
+            <ToucheClavier
               key={touche.id}
-              type="button"
-              className={`bouton clavier__touche clavier__touche--${touche.id}`}
-              style={touche.largeur ? { gridColumn: `span ${touche.largeur}` } : undefined}
-              aria-label={touche.aria}
-              aria-controls={champId}
-              onPointerDown={(evenement) => surPointerDown(evenement, touche.action)}
-              onClick={(evenement) => surClick(evenement, touche.action)}
-            >
-              {touche.libelle}
-            </button>
+              touche={touche}
+              champId={champId}
+              surPointerDown={surPointerDown}
+              surClick={surClick}
+            />
           ))}
         </div>
       ))}

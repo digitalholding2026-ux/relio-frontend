@@ -99,8 +99,19 @@ describe('globals.css — bordure des éléments interactifs', () => {
     expect(bloc('.exercice__saisie {')).toContain('border: 1px solid var(--bordure-forte)');
   });
 
-  it('les touches du clavier utilisent `--bordure-forte`', () => {
-    expect(bloc('.clavier__touche {')).toContain('border: 1px solid var(--bordure-forte)');
+  it('les touches du clavier utilisent une bordure forte', () => {
+    // **Chantier C2b** : les touches ne sont plus dans `globals.css` — leur
+    // habillage est passé dans `components/ToucheClavier.module.css`. Ce
+    // contrôle reste ici, mais pointe désormais le bon fichier : la bordure
+    // d'une touche de contrôle doit rester perceptible (seuil AA SC 1.4.11).
+    const touche = readFileSync(
+      join(process.cwd(), 'src/components/ToucheClavier.module.css'),
+      'utf8',
+    );
+    expect(touche).toContain('border: 1px solid var(--relio-bordure-forte)');
+
+    // Et l'ancien bloc a bien disparu de la feuille globale.
+    expect(() => bloc('.clavier__touche {')).toThrow();
   });
 
   it('`--bordure` reste affectée aux séparateurs décoratifs', () => {

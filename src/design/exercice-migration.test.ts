@@ -35,7 +35,7 @@ const SOURCES_MIGREES = [
 
 const MODULES_CSS = ['app/parcours/[id]/exercice.module.css'];
 
-/** Le clavier — chantier C2b. */
+/** Le clavier — migré au chantier C2b, dans ses propres fichiers. */
 const CLAVIER = 'components/ClavierMath.tsx';
 
 /**
@@ -142,15 +142,12 @@ describe('/parcours/[id] — aucune classe globale', () => {
     }
   });
 
-  it('le clavier est le seul élément qui garde ses classes globales', () => {
-    // Les styles du clavier restent dans `globals.css` : c'est le chantier C2b
-    // qui les migrera. Ce contrôle garantit qu'aucun **autre** élément de
-    // l'écran ne s'y accroche.
+  it('`Exercice.tsx` ne nomme plus aucune classe du clavier', () => {
+    // Le clavier est migré dans ses propres fichiers : l'écran d'exercice ne
+    // fait plus que monter `<ClavierMath>`.
     const source = sansCommentaires(contenu('components/Exercice.tsx'));
     const globales = valeursClassName(source).filter((c) => CLASSES_CLAVIER_AUTORISEES.includes(c.trim()));
 
-    // Le composant n'a pas besoin de nommer les classes du clavier : il ne
-    // fait que monter `<ClavierMath>`, qui les porte lui-même.
     expect(globales).toEqual([]);
   });
 
@@ -184,14 +181,14 @@ describe('/parcours/[id] — imports du design system', () => {
     }
   });
 
-  it('ClavierMath.tsx n’a reçu aucun import du design system (C2b)', () => {
+  it('ClavierMath.tsx n’utilise plus aucune classe de globals.css (C2b)', () => {
+    // C2b a migré le clavier : son habillage vient désormais de modules locaux.
+    // Ce test verrouille qu'il n'est pas revenu en arrière.
     const source = sansCommentaires(contenu(CLAVIER));
+    const globales = valeursClassName(source).filter((c) => CLASSES_ET_API.includes(c.trim()));
 
-    expect(source, 'ClavierMath a importé le design system').not.toMatch(/@\/components\/ds/);
-    // Le clavier garde ses classes globales ; un import de module CSS ici
-    // aurait commencé sa migration sans que le chantier C2b le prévoie.
-    expect(source, 'ClavierMath a importé un module CSS').not.toMatch(/\.module\.css/);
-    expect(source).toMatch(/className=\{`bouton clavier__touche/);
+    expect(globales, 'ClavierMath est revenu à globals.css').toEqual([]);
+    expect(source).not.toMatch(/globals\.css/);
   });
 });
 

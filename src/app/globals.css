@@ -604,87 +604,20 @@ body {
      batterie sur des appareils d'entrée de gamme, sans apporter d'information.
    =========================================================================== */
 
-.clavier {
-  position: sticky;
-  bottom: 0;
-  margin-top: 0.75rem;
-  padding: 0.5rem;
-  background: var(--surface);
-  border-top: 1px solid var(--bordure);
-  box-shadow: 0 -2px 12px rgba(20, 22, 31, 0.06);
-  z-index: 10;
-}
 
-.clavier__rangee {
-  display: grid;
-  grid-template-columns: repeat(var(--colonnes, 4), minmax(0, 1fr));
-  gap: 6px;
-}
 
 /* Écart entre deux rangées plus faible qu'entre deux touches : la grille doit
    se lire comme un bloc de chiffres, pas comme une liste de touches. */
-.clavier__rangee + .clavier__rangee {
-  margin-top: 5px;
-}
 
-.clavier__touche {
-  /* 44 px minimum : en dessous, la touche est difficile à viser au doigt. */
-  min-height: 44px;
-  padding: 0.4rem 0.2rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--texte);
-  background: var(--surface);
-  /* La touche est un contrôle : sa bordure doit être perceptible, pas
-     décorative. 3,66:1 sur blanc. */
-  border: 1px solid var(--bordure-forte);
-  border-radius: 10px;
-  cursor: pointer;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-}
 
-.clavier__touche:active {
-  background: var(--primaire-doux);
-  border-color: var(--primaire);
-}
 
 /* Touches de contrôle : visuellement distinctes des touches de saisie, pour
    qu'aucune suppression ne soit confondue avec un caractère. */
-.clavier__touche--retour,
-.clavier__touche--effacer,
-.clavier__touche--gauche,
-.clavier__touche--droite {
-  background: var(--fond);
-  color: var(--texte-doux);
-}
 
-.clavier__touche--valider {
-  background: var(--primaire);
-  border-color: var(--primaire);
-  color: #ffffff;
-  font-size: 0.95rem;
-}
 
-.clavier__touche--valider:active {
-  background: var(--primaire-sombre);
-}
 
-.clavier__touche--fermer,
-.clavier__touche--systeme {
-  background: transparent;
-  color: var(--texte-doux);
-  font-size: 0.8rem;
-  font-weight: 500;
-}
 
 /* Cible le retour au focus du champ après une frappe de touche. */
-.clavier__touche:focus-visible {
-  outline: 3px solid var(--primaire);
-  outline-offset: 1px;
-}
 
 /* Aperçu lisible de la saisie, juste sous le champ. */
 .exercice__apercu {
@@ -832,33 +765,9 @@ body {
 
 /* Le composeur et le clavier doivent rester atteignables au doigt : on laisse
    le défilement naturel agir plutôt que de fixer quoi que ce soit. */
-.exercice--saisie .clavier {
-  position: static;
-  flex: 0 0 auto;
-  margin-top: 0;
-  box-shadow: none;
-  border-top: 1px solid var(--bordure);
-}
 
 /* Sur les écrans bas, on resserre les espacements internes du clavier sans
    jamais descendre sous 44 px : la cible tactile est non négociable. */
-@media (max-height: 700px) {
-  .clavier {
-    padding: 0.25rem;
-  }
-
-  .clavier__rangee {
-    gap: 4px;
-  }
-
-  .clavier__rangee + .clavier__rangee {
-    margin-top: 4px;
-  }
-
-  .clavier__touche {
-    padding: 0.25rem 0.15rem;
-  }
-}
 
 /* L'énoncé et la consigne ne doivent pas être mangés par le composeur quand la
    zone défilante est réduite : ils gardent leur respiration habituelle. */

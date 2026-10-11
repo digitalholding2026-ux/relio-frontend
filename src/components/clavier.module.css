@@ -1,0 +1,80 @@
+/**
+ * Le clavier mathématique — feuille locale.
+ *
+ * ## Les dimensions sont contractuelles
+ *
+ * Ce clavier fait **453 px de haut** sur un écran de 640 px. C'est le résultat
+ * du chantier 7.7 : avant correction, le clavier recouvrait l'énoncé et
+ * l'élève devait faire défiler pour le relire.
+ *
+ *   9 rangées      ×  44 px  =  396 px
+ *   8 écarts       ×   5 px  =   40 px
+ *   2 paddings     ×   8 px  =   16 px
+ *   bordure haute  ×   1 px  =    1 px
+ *                                ─────────
+ *                                  453 px
+ *
+ * Sous `max-height: 700px`, les paddings passent à 4 px et les écarts à 4 px :
+ * **437 px**, sans jamais descendre sous 44 px de haut par touche.
+ *
+ * **Aucune de ces valeurs ne change au chantier C2b.** Un test statique les
+ * recalcule et échoue si elles bougent.
+ *
+ * ## Ce qui change
+ *
+ * La feuille passe de `globals.css` à un module local, et les couleurs
+ * deviennent des tokens `--relio-*`. Les **valeurs** sont équivalentes ou
+ * meilleures :
+ *
+ * | Avant (`globals.css`) | Après (token) | Contraste |
+ * |---|---|---|
+ * | `--primaire` `#2b4bd8` sur blanc | `--relio-primaire` `#1e2a78` | 6,77:1 → **12,67:1** |
+ * | `--bordure-forte` `#7c85a3` | `--relio-bordure-forte` `#838a96` | 3,66:1 → **3,48:1** |
+ * | `--texte-doux` `#4d5468` | `--relio-texte-secondaire` `#63738a` | 7,11:1 → 4,88:1 |
+ *
+ * La bordure passe de 3,66:1 à 3,48:1 — au-dessus du seuil de 3:1 dans les
+ * deux cas. C'est la seule valeur qui baisse légèrement, et elle reste
+ * conforme.
+ *
+ * ## Ce qui ne change pas
+ *
+ * `position: sticky`, `bottom: 0`, `z-index`, les gaps, les rayons, l'absence
+ * d'animation sur la grille, et les deux règles `@media`.
+ */
+
+.clavier {
+  position: sticky;
+  bottom: 0;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: var(--relio-surface);
+  border-top: 1px solid var(--relio-bordure);
+  box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.06);
+  z-index: 10;
+}
+
+.rangee {
+  display: grid;
+  grid-template-columns: repeat(var(--colonnes, 4), minmax(0, 1fr));
+  gap: 6px;
+}
+
+/* Écart entre deux rangées plus faible qu'entre deux touches : la grille doit
+   se lire comme un bloc de chiffres, pas comme une liste de touches. */
+.rangee + .rangee {
+  margin-top: 5px;
+}
+
+@media (max-height: 700px) {
+  .clavier {
+    padding: 0.25rem;
+  }
+
+  .rangee {
+    gap: 4px;
+  }
+
+  .rangee + .rangee {
+    margin-top: 4px;
+  }
+}

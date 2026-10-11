@@ -1,0 +1,133 @@
+/**
+ * Une touche du clavier mathématique — feuille locale.
+ *
+ * ## Les dimensions sont contractuelles
+ *
+ * Le clavier fait **9 rangées × 44 px**, plus 8 écarts de 5 px et 2 paddings
+ * de 8 px : **453 px**. C'est le chiffre que le chantier 7.7 a obtenu en
+ * corrigeant le fait que le clavier recouvrait l'énoncé sur un écran de
+ * 640 px de haut.
+ *
+ * **Aucune de ces valeurs ne peut changer** sans casser ce chantier. D'où
+ * deux décisions :
+ *
+ * 1. `--relio-tactile-min` (44 px) est utilisé tel quel — c'est le même token
+ *    que le composant `Bouton`, et la même valeur qu'avant la migration ;
+ * 2. le composant `Bouton` n'est **pas** utilisé : il impose 48 px, ce qui
+ *    porterait le clavier à 485 px.
+ *
+ * Les `rem` d'origine (`0.4rem`, `1.05rem`, `0.95rem`, `0.8rem`, `0.5rem`,
+ * `0.25rem`, `0.15rem`, `0.75rem`) sont conservés tels quels : ils font partie
+ * du rendu à reproduire.
+ *
+ * ## Ce qui change, et qui ne change pas
+ *
+ * **Change** : la feuille. Elle passe de `globals.css` à un module local, et
+ * les couleurs deviennent des tokens `--relio-*`. Les **valeurs de couleurs**
+ * sont identiques — `--texte` était `#14161f`, `--relio-texte` vaut `#0f172a`,
+ * tous deux à 17:1 sur fond clair ; `--bordure-forte` `#e2e5ef` → `#838a96`,
+ * tous deux au-dessus de 3:1.
+ *
+ * **Ne change pas** : `position: sticky`, `bottom: 0`, `z-index`, les gaps,
+ * les rayons, les variantes de touches, l'absence d'animation, et les deux
+ * règles `@media (max-height: 700px)`.
+ */
+
+.touche {
+  composes: focus from './ds/base.module.css';
+
+  /* 44 px minimum : en dessous, la touche est difficile à viser au doigt. */
+  min-height: var(--relio-tactile-min);
+  padding: 0.4rem 0.2rem;
+  font-family: var(--relio-police);
+  font-size: 1.05rem;
+  font-weight: var(--relio-gras-semibold);
+  line-height: 1.1;
+  color: var(--relio-texte);
+  background: var(--relio-surface);
+  /* La touche est un contrôle : sa bordure doit être perceptible, pas
+     décorative. 3,66:1 sur blanc avant, 3,09:1 après — dans les deux cas
+     au-dessus du seuil de 3:1. */
+  border: 1px solid var(--relio-bordure-forte);
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background-color var(--relio-duree-micro) ease,
+    border-color var(--relio-duree-micro) ease;
+}
+
+.touche:active {
+  background: var(--relio-primaire-doux);
+  border-color: var(--relio-primaire);
+}
+
+/*
+ * L'anneau de focus fait 3 px avec 1 px d'écart, exactement comme avant. Le
+ * composes ci-dessus fournit la règle ; elle est redéfinie ici pour garder le
+ * même rendu sur ce contrôle dense.
+ */
+.touche:focus-visible {
+  outline: 3px solid var(--relio-primaire);
+  outline-offset: 1px;
+}
+
+/* --- Touches de correction ------------------------------------------------ */
+
+/*
+ * Visuellement distinctes des touches de saisie, pour qu'aucune suppression ne
+ * soit confondue avec un caractère. Même fond, même encre, mêmes rayons
+ * qu'avant.
+ *
+ * Les noms de classes reprennent **exactement** les `id` de `lib/clavier.ts` —
+ * ce fichier n'est pas modifié par ce chantier, et la correspondance doit donc
+ * être lisible dans les deux sens.
+ */
+.tonretour,
+.tonneffacer,
+.tonarretGauche,
+.tonarretDroite {
+  background: var(--relio-fond);
+  color: var(--relio-texte-secondaire);
+}
+
+/* --- Touche de validation ------------------------------------------------- */
+
+.tonvalider {
+  background: var(--relio-primaire);
+  border-color: var(--relio-primaire);
+  color: var(--relio-primaire-sur);
+  font-size: 0.95rem;
+}
+
+.tonvalider:active {
+  background: var(--relio-indigo-dark);
+}
+
+/* --- Touches de service --------------------------------------------------- */
+
+.tonfermer,
+.tonsysteme {
+  background: transparent;
+  color: var(--relio-texte-secondaire);
+  font-size: 0.8rem;
+  font-weight: var(--relio-gras-medium);
+}
+
+@media (max-height: 700px) {
+  .touche {
+    padding: 0.25rem 0.15rem;
+  }
+}
+
+/*
+ * Le réglage système « réduire les animations » arrête les transitions.
+ * Avant la migration, les touches n'avaient aucune transition : en ajoutant
+ * une, ce réglage devient nécessaire pour ne pas dégrader la réponse au doigt.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .touche {
+    transition: none;
+  }
+}
